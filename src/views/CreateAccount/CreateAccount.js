@@ -11,17 +11,19 @@ export default class CreateAccount extends React.Component {
   constructor(props) {
     super(props);
     // The passwords here will be viewable by "Inspect element", but this is
-    // not a privacy concern as it will only be the user's own passwords.
+    // not a privacy concern as it will only be the user's own password.
     this.state = {
       oobCode: "",
       email: "",
       password: "",
       confirmPassword: "",
+      loggedInUser: null,
       error: "",
     };
 
     this.updatePassword = this.updatePassword.bind(this);
     this.updateConfirmPassword = this.updateConfirmPassword.bind(this);
+    this.getErrorMessage = this.getErrorMessage.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -54,15 +56,27 @@ export default class CreateAccount extends React.Component {
     this.setState({ confirmPassword: e.target.value });
   }
 
+  getErrorMessage() {
+    if (this.state.error !== "") {
+      return (
+        <div>
+          <p className="ErrorMessage"> {this.state.error} </p>
+        </div> 
+        )
+    } else {
+      return (
+        <div>
+        </div>
+        )
+    }
+  }
+
   handleSubmit(e) {
     e.preventDefault();
-    // Do we want the password to meet any requirements?
-    // Ex: 8 characters, 1 special character, etc.
-    // TODO(rohit): Render message on view instead of alerting
     if (this.state.password !== this.state.confirmPassword) {
-      alert("Passwords do not match. Please fix.");
+      this.setState({ error: "Passwords do not match. Please fix." });
     } else if (this.state.password === "") {
-      alert("Password cannot be empty.");
+      this.setState({error: "Password cannot be empty."});
     } else {
       auth
         .confirmPasswordReset(this.state.oobCode, this.state.password)
@@ -83,14 +97,15 @@ export default class CreateAccount extends React.Component {
             );
         })
         .catch((err) => {
+          this.setState({error: err});
           console.log(err);
         });
     }
   }
 
   render() {
-    const { error } = this.state;
     const { loggedInUser } = this.state;
+    let errorMessage = this.getErrorMessage();
 
     if (loggedInUser) {
       const newHistory = createBrowserHistory();
@@ -114,14 +129,6 @@ export default class CreateAccount extends React.Component {
           <br />
 
           <h4>Create login information</h4>
-          {error ? (
-            <section>
-              <div>
-                <p>{error}</p>
-                <p>Please try resetting password!</p>
-              </div>
-            </section>
-          ) : (
             <section>
               <form onSubmit={this.handleSubmit}>
                 <label>
@@ -132,7 +139,6 @@ export default class CreateAccount extends React.Component {
                     type="email"
                     value={this.state.email}
                     name="email_account"
-                    placeholder="please type your email address here"
                   />
                 </label>
                 <br />
@@ -143,7 +149,7 @@ export default class CreateAccount extends React.Component {
                     type="password"
                     name="password"
                     onChange={this.updatePassword}
-                    placeholder="password here"
+                    placeholder="enter password here"
                   />
                 </label>
                 <br />
@@ -154,15 +160,15 @@ export default class CreateAccount extends React.Component {
                     type="password"
                     name="confirm-password"
                     onChange={this.updateConfirmPassword}
-                    placeholder="password here"
+                    placeholder="re-enter password here"
                   />
                 </label>
                 <br />
+                {errorMessage}
                 <br />
                 <input type="submit" value="Complete" />
               </form>
             </section>
-          )}
         </div>
         <Footer />
       </div>
