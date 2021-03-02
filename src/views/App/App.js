@@ -18,7 +18,6 @@ const Statistics = lazy(() => import('../Statistics/Statistics'));
 const Onboarding = lazy(() => import('../Onboarding/Onboarding'));
 const Settings = lazy(() => import('../Settings/Settings'));
 const CreateAccount = lazy(() => import('../CreateAccount/CreateAccount'));
-const ForgotPassword = lazy(() => import('../ForgotPassword/ForgotPassword'));
 
 const history = createBrowserHistory();
 
@@ -63,8 +62,6 @@ class App extends Component {
             <Route exact path="/case" render={(props) => <Cases {...props} user_type={this.state.admin} first_name={this.state.first_name} last_name={this.state.last_name} />}/>
             <Route exact path="/case/:case_id" render={(props) => <CasePage {...props} user_type={this.state.admin} first_name={this.state.first_name} last_name={this.state.last_name} />}/>
             <Route exact path="/createaccount" render={(props) => <CreateAccount {...props} />}/>
-            <Route exact path="/forgotpassword" render={(props) => <ForgotPassword {...props} />}/>
-
             {
               this.state.admin ? <Route exact path="/mycases" render={(props) => <Home {...props} user_type={this.state.admin} first_name={this.state.first_name} last_name={this.state.last_name} />}/> : ""
             }
