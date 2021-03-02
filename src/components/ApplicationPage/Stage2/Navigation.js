@@ -8,29 +8,29 @@ export default ({ lang }) => {
       uk-switcher="animation: uk-animation-fade"
     >
       <li>
-        <a href="#">support</a>
+        <a href="/#">support</a>
       </li>
       <li>
-        <a href="#">learn about us</a>
+        <a href="/#">learn about us</a>
       </li>
       <li>
-        <a href="#">languages</a>
+        <a href="/#">languages</a>
       </li>
       <li>
-        <a href="#">confidence</a>
+        <a href="/#">confidence</a>
       </li>
       {lang.map((l, index) => (
         <li key={`${l}${index}wow`}>
-          <a href="#">{l} exp</a>
+          <a href="/#">{l} exp</a>
         </li>
       ))}
       {lang.map((l, index) => (
         <li key={`${l}${index}oralllwow`}>
-          <a href="#">{l} oral</a>
+          <a href="/#">{l} oral</a>
         </li>
       ))}
       <li>
-        <a href="#">prep</a>
+        <a href="/#">prep</a>
       </li>
     </ul>
   );

@@ -1,7 +1,17 @@
 .uk-card-default {
-    box-shadow: 0 2px 5px rgba(0,0,0,.08);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
 }
 
 .uk-card-default.uk-card-hover:hover {
-    box-shadow: 0 8px 13px rgba(0,0,0,.08);
+  box-shadow: 0 8px 13px rgba(0, 0, 0, 0.08);
+}
+
+.parent {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.child {
+  flex: 1 0 21%; 
+  margin: 5px;
 }

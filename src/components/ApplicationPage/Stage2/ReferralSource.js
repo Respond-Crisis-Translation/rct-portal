@@ -1,13 +1,7 @@
 import React from "react";
 import Organizations from "../../../assets/lists/knownOrganizations";
 
-
-export default ({
-  answers,
-  onChange,
-  setOtherField,
-  otherField,
-}) => {
+export default ({ answers, onChange, setOtherField, otherField }) => {
   return (
     <>
       <div className="uk-width-1-1">
@@ -21,7 +15,7 @@ export default ({
                 name="find_us"
                 onChange={() => {
                   let editAnswer = answers;
-                  editAnswer["find_us"] = org;
+                  editAnswer["find_us"] = [org];
                   onChange({ answers: editAnswer });
                   setOtherField(false);
                 }}

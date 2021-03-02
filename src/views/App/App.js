@@ -1,12 +1,15 @@
-import React, {Suspense, Component, lazy} from 'react';
-import {createBrowserHistory} from 'history';
-import {Route, Router, Switch} from 'react-router-dom';
+import { createBrowserHistory } from "history";
+import React, { Component, lazy, Suspense } from "react";
+import { Route, Router, Switch } from "react-router-dom";
+import "uikit/dist/css/uikit.min.css";
+import "uikit/dist/js/uikit-icons.min";
+import "uikit/dist/js/uikit.min";
+import { ProvideAuth } from "../../components/Auth/Auth";
+import PrivateRoute from "../../components/PrivateRoute/PrivateRoute";
+import { auth } from "../../firebase";
+import UnauthorizedPage from "../UnauthorizedPage/UnauthorizedPage";
+import "./App.css";
 
-import 'uikit/dist/css/uikit.min.css';
-import 'uikit/dist/js/uikit.min';
-import 'uikit/dist/js/uikit-icons.min';
-
-import './App.css';
 // import UIkit from 'uikit';
 
 const Home = lazy(() => import('../Home/Home'));
@@ -18,58 +21,93 @@ const Statistics = lazy(() => import('../Statistics/Statistics'));
 const Onboarding = lazy(() => import('../Onboarding/Onboarding'));
 const Settings = lazy(() => import('../Settings/Settings'));
 const CreateAccount = lazy(() => import('../CreateAccount/CreateAccount'));
+const Login = lazy(() => import("../Login/Login"));
 const ForgotPassword = lazy(() => import('../ForgotPassword/ForgotPassword'));
 
 const history = createBrowserHistory();
-
-// let main_url = process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:5001/navie-vurdien/a/helloWorld' : 'https://us-central1-navie-vurdien.cloudfunctions.net/helloWorld'
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      auth: false,
-      admin: true,
-      first_name: 'Jane',
-      last_name: 'Doe'
-    }
+      admin: false,
+    };
   }
 
-  fetchData = (url, config) => fetch(url, config)
-  .then((response) => {
-      if(response.status >= 200 && response.status < 300) {
-        return response.json();
-      }
-      console.log(response.status)
-      return Promise.reject();
-  })
+  componentDidMount() {
+    auth.onAuthStateChanged((user) => {
+      user.getIdTokenResult().then((idTokenResult) => {
+        const role = idTokenResult.claims.role;
+        if (role === "admin" || role === "super_admin") {
+          this.setState({ admin: true });
+        }
+      });
+    });
+  }
 
   render() {
     return (
-      <Router history={history}>
-        <Suspense fallback={<div></div>}>
-          <Switch>
-            {
-              this.state.admin ?
-              <Route exact path="/" render={(props) => <Cases {...props} user_type={this.state.admin} first_name={this.state.first_name} last_name={this.state.last_name} />}/> :
-              <Route exact path="/" render={(props) => <Home {...props} user_type={this.state.admin} first_name={this.state.first_name} last_name={this.state.last_name} />}/>
-            }
-            <Route exact path="/application" render={(props) => <Application {...props} user_type={this.state.admin} first_name={this.state.first_name} last_name={this.state.last_name} />}/>
-            <Route exact path="/onboarding" render={(props) => <Onboarding {...props} user_type={this.state.admin} first_name={this.state.first_name} last_name={this.state.last_name} />}/>
-            <Route exact path="/settings" render={(props) => <Settings {...props} user_type={this.state.admin} first_name={this.state.first_name} last_name={this.state.last_name} />}/>
-            <Route exact path="/statistics" render={(props) => <Statistics {...props} user_type={this.state.admin} first_name={this.state.first_name} last_name={this.state.last_name} />}/>
-            <Route exact path="/translator" render={(props) => <Translators {...props} user_type={this.state.admin} first_name={this.state.first_name} last_name={this.state.last_name} />}/>
-            <Route exact path="/case" render={(props) => <Cases {...props} user_type={this.state.admin} first_name={this.state.first_name} last_name={this.state.last_name} />}/>
-            <Route exact path="/case/:case_id" render={(props) => <CasePage {...props} user_type={this.state.admin} first_name={this.state.first_name} last_name={this.state.last_name} />}/>
-            <Route exact path="/createaccount" render={(props) => <CreateAccount {...props} />}/>
-            <Route exact path="/forgotpassword" render={(props) => <ForgotPassword {...props} />}/>
-            {
-              this.state.admin ? <Route exact path="/mycases" render={(props) => <Home {...props} user_type={this.state.admin} first_name={this.state.first_name} last_name={this.state.last_name} />}/> : ""
-            }
-          </Switch>
-        </Suspense>
-      </Router>
-    )
+      <ProvideAuth>
+        <Router history={history}>
+          <Suspense fallback={<div></div>}>
+            <Switch>
+              {this.state.admin ? (
+                <PrivateRoute exact path="/">
+                  <Cases />
+                </PrivateRoute>
+              ) : (
+                <PrivateRoute exact path="/">
+                  <Home />
+                </PrivateRoute>
+              )}
+              <Route exact path="/application">
+                <Application />
+              </Route>
+              <PrivateRoute exact path="/onboarding" requiredRole={"admin"}>
+                <Onboarding />
+              </PrivateRoute>
+              <PrivateRoute exact path="/settings">
+                <Settings />
+              </PrivateRoute>
+              <PrivateRoute exact path="/statistics">
+                <Statistics />
+              </PrivateRoute>
+              <PrivateRoute exact path="/translator" requiredRole={"admin"}>
+                <Translators />
+              </PrivateRoute>
+              <PrivateRoute exact path="/case" requiredRole={"admin"}>
+                <Cases />
+              </PrivateRoute>
+              <PrivateRoute
+                exact
+                path="/case/:case_id"
+                component={CasePage}
+              ></PrivateRoute>
+              <Route exact path="/createaccount">
+                <CreateAccount />
+              </Route>
+              <Route exact path="/forgotpassword">
+                <ForgotPassword />
+              </Route>
+              <Route
+                exact
+                path="/login"
+                render={(props) => <Login {...props} />}
+              />
+              <Route
+                exact
+                path="/unathorized"
+                render={(props) => <UnauthorizedPage {...props} />}
+              />
+              <PrivateRoute exact path="/mycases">
+                <Home />
+              </PrivateRoute>
+              )
+            </Switch>
+          </Suspense>
+        </Router>
+      </ProvideAuth>
+    );
   }
 }
 

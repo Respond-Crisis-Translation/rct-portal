@@ -19,6 +19,7 @@ export default class CreateAccount extends React.Component {
       confirmPassword: "",
       loggedInUser: null,
       error: "",
+      codeError: null,
     };
 
     this.updatePassword = this.updatePassword.bind(this);
@@ -35,12 +36,12 @@ export default class CreateAccount extends React.Component {
         this.setState({ email: email, oobCode: oobCode });
       })
       .catch((err) => {
-        this.setState({ error: err.message });
+        this.setState({ codeError: err.message });
       });
   }
 
   getParameterByName(name, url = window.location.href) {
-    name = name.replace(/[\[\]]/g, "\\$&");
+    name = name.replace(/[[]]/g, "\\$&");
     var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
       results = regex.exec(url);
     if (!results) return null;
@@ -57,18 +58,13 @@ export default class CreateAccount extends React.Component {
   }
 
   getErrorMessage() {
-    if (this.state.error !== "") {
-      return (
-        <div>
-          <p className="ErrorMessage"> {this.state.error} </p>
-        </div> 
-        )
-    } else {
-      return (
-        <div>
-        </div>
-        )
-    }
+    return this.state.error ? (
+      <div>
+        <p className="ErrorMessage"> {this.state.error} </p>
+      </div>
+    ) : (
+      <div></div>
+    );
   }
 
   handleSubmit(e) {
@@ -76,11 +72,11 @@ export default class CreateAccount extends React.Component {
     if (this.state.password !== this.state.confirmPassword) {
       this.setState({ error: "Passwords do not match. Please fix." });
     } else if (this.state.password === "") {
-      this.setState({error: "Password cannot be empty."});
+      this.setState({ error: "Password cannot be empty." });
     } else {
       auth
         .confirmPasswordReset(this.state.oobCode, this.state.password)
-        .then((resp) => {
+        .then(() => {
           auth
             .signInWithEmailAndPassword(this.state.email, this.state.password)
             .then(
@@ -88,7 +84,7 @@ export default class CreateAccount extends React.Component {
                 console.log(userRecord);
                 // if admin, lands to cases
                 // if translator, lands to my cases
-                this.setState({ loggedInUser: userRecord });
+                this.setState({ loggedInUser: userRecord, errorMessage: "" });
               },
               (err) => {
                 console.log(err);
@@ -97,7 +93,7 @@ export default class CreateAccount extends React.Component {
             );
         })
         .catch((err) => {
-          this.setState({error: err});
+          this.setState({ error: err });
           console.log(err);
         });
     }
@@ -105,6 +101,7 @@ export default class CreateAccount extends React.Component {
 
   render() {
     const { loggedInUser } = this.state;
+    const { codeError } = this.state;
     let errorMessage = this.getErrorMessage();
 
     if (loggedInUser) {
@@ -129,6 +126,14 @@ export default class CreateAccount extends React.Component {
           <br />
 
           <h4>Create login information</h4>
+          {codeError ? (
+            <section>
+              <div>
+                <p>{codeError}</p>
+                <p>Please try resetting password!</p>
+              </div>
+            </section>
+          ) : (
             <section>
               <form onSubmit={this.handleSubmit}>
                 <label>

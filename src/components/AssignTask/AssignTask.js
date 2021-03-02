@@ -39,7 +39,7 @@ export default ({first_name, last_name, task_in_progress, languages, tasks}) => 
                         </thead>
                         <tbody>
                             {
-                                tasks.map((task, z) => (
+                                tasks.map((task) => (
                                     <tr key={`${task.first_name} ${task.last_name} task ${task.case_number}`}>
                                         <td>{task.first_name} {task.last_name}</td>
                                         <td><span className="uk-label">{lang_short[task.fromLanguage]} &#9658; {lang_short[task.toLanguage]}</span></td>

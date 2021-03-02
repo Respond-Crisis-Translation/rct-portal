@@ -18,7 +18,7 @@ export default class Translators extends React.Component {
   }
 
   componentDidMount() {
-    TranslatorService.getTranslators()
+    TranslatorService.getTranslators('APPROVED')
       .then((snapshot) => {
         const data = snapshot.docs.map((doc) => doc.data());
         this.setState({ translators: data });

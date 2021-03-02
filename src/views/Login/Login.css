@@ -1,0 +1,45 @@
+.UserInformation {
+	border: 1px solid black;
+	position: absolute;
+	padding: 50px;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    width: 275px;
+}
+
+.UserInformation h4 {
+	text-align: center;
+}
+
+.UserInformation input[type="email"] {
+	width: 275px;
+}
+
+.UserInformation input[type="password"] {
+	width: 275px;
+}
+
+.UserInformation input[type="submit"] {
+	color: white;
+	background-color : #699bd5;
+	width: 175px;
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.Logo {
+	float: left;
+	position: relative;
+	margin: 10px 15px 15px 10px;
+}
+
+.Login a {
+	color: inherit;
+	display: inline-block;
+}
+
+.ErrorMessage {
+	color: red;
+}

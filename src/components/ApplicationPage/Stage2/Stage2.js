@@ -36,7 +36,15 @@ export default ({ onChange, previous, advance, answers, languages }) => {
           />
         </li>
         <li>
-          <TranslationCapability onChange={onChange} languages={languages} lang={lang} fromLang={fromLang} setFromLang={setFromLang} toLang={toLang} setToLang={setToLang}/>
+          <TranslationCapability
+            onChange={onChange}
+            languages={languages}
+            lang={lang}
+            fromLang={fromLang}
+            setFromLang={setFromLang}
+            toLang={toLang}
+            setToLang={setToLang}
+          />
         </li>
         {lang.map((l, index) => (
           <li key={l + " experience"}>
@@ -60,7 +68,7 @@ export default ({ onChange, previous, advance, answers, languages }) => {
                     }}
                     readOnly
                   />{" "}
-                  {ex}
+                  {languages[l]["experience"][ex]["description"]}
                 </label>
               ))}
             </div>

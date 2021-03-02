@@ -3,7 +3,7 @@ import React from "react";
 export default () => {
   return (
     <div>
-      <h1 className="uk-text-lead">You're all set for now!</h1>
+      <h1 className="uk-text-lead">You are all set for now!</h1>
       <h1 className="uk-text-lead">
         We will review your application and contact you shortly through email.
       </h1>

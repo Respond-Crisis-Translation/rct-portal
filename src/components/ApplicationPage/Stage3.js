@@ -11,7 +11,7 @@ export default ({ advance, languages }) => {
         {Object.keys(languages).map((l, index) =>
           languages[l]["checked"] && languages[l]["toEnglish"] ? (
             <li key={l + index + "totranslating"}>
-              <a href="#">{l} translate</a>
+              <a href="/#">{l} translate</a>
             </li>
           ) : (
             ""
@@ -20,18 +20,18 @@ export default ({ advance, languages }) => {
         {Object.keys(languages).map((l, index) =>
           languages[l]["checked"] && languages[l]["fromEnglish"] ? (
             <li key={l + index + "fromtranslating"}>
-              <a href="#">{l} translate</a>
+              <a href="/#">{l} translate</a>
             </li>
           ) : (
             ""
           )
         )}
         <li>
-          <a href="#">done</a>
+          <a href="/#">done</a>
         </li>
       </ul>
       <ul className="uk-switcher uk-margin">
-        {Object.keys(languages).map((l, index) =>
+        {Object.keys(languages).map((l) =>
           languages[l]["checked"] &&
           languages[l]["toEnglish"] &&
           languages[l]["fromEnglish"] ? (
