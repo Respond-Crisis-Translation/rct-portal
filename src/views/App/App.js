@@ -43,7 +43,6 @@ class App extends Component {
       console.log(response.status)
       return Promise.reject();
   })
-  
 
   render() {
     return (
