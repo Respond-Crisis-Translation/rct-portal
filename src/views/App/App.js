@@ -22,6 +22,7 @@ const Onboarding = lazy(() => import("../Onboarding/Onboarding"));
 const Settings = lazy(() => import("../Settings/Settings"));
 const CreateAccount = lazy(() => import("../CreateAccount/CreateAccount"));
 const Login = lazy(() => import("../Login/Login"));
+const ForgotPassword = lazy(() => import("../ForgotPassword/ForgotPassword"));
 const history = createBrowserHistory();
 
 class App extends Component {
@@ -90,6 +91,11 @@ class App extends Component {
                 exact
                 path="/login"
                 render={(props) => <Login {...props} />}
+              />
+              <Route
+                exact
+                path="/forgotpassword"
+                render={(props) => <ForgotPassword {...props} />}
               />
               <Route
                 exact
