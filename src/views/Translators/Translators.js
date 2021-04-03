@@ -84,10 +84,11 @@ export default class Translators extends React.Component {
                     onChange={() =>
                       this.setState({ show: this.state.show === i ? null : i })
                     }
-                    updateTranslator={this.updateTranslator}
+                    updateTuyranslator={this.updateTranslator}
                     role={this.state.role}
                     show={this.state.show === i}
                     onboard={onboard}
+                    key={i + "_translator"}
                     i={i}
                   />
                 ))}

@@ -35,12 +35,14 @@ class App extends Component {
 
   componentDidMount() {
     auth.onAuthStateChanged((user) => {
-      user.getIdTokenResult().then((idTokenResult) => {
-        const role = idTokenResult.claims.role;
-        if (role === "admin" || role === "super_admin") {
-          this.setState({ admin: true });
-        }
-      });
+      if (user) {
+        user.getIdTokenResult().then((idTokenResult) => {
+          const role = idTokenResult.claims.role;
+          if (role === "admin" || role === "super_admin") {
+            this.setState({ admin: true });
+          }
+        });
+      }
     });
   }
 
