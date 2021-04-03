@@ -30,7 +30,7 @@ function ForgotPassword() {
   const getSuccessMessage = () => {
     return success ? (
       <div className="uk-alert-primary" uk-alert="true">
-        <a className="uk-alert-close" uk-close="true" href="/#"></a>
+        <a href="/#" className="uk-alert-close" uk-close="true"> </a>
         <p className="AlertMessage">
           Successfully been sent an email with instructions to reset your
           password.
