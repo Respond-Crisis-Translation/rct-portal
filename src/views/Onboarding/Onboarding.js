@@ -20,7 +20,7 @@ export default class Onboarding extends React.Component {
   componentDidMount() {
     this.loadApplications();
   }
-  
+
   loadApplications() {
     TranslatorService.getTranslators("PENDING").then((snapshot) => {
       const data = snapshot.docs.map((doc) => doc.data());
@@ -84,39 +84,74 @@ export default class Onboarding extends React.Component {
                       </td>
                       <td>
                         {onboard.languages.map((language, y) => (
+                          <div key={
+                            onboard.first_name +
+                            onboard.last_name +
+                            language.language +
+                            " language(s) " +
+                            i +
+                            " " +
+                            y
+                          }>
+                            {language.fromEnglish ? (
+                              <span
+                                className="uk-label"
+                                key={
+                                  onboard.first_name +
+                                  onboard.last_name +
+                                  " from English to " +
+                                  language.langauge +
+                                  " language(s) " +
+                                  i +
+                                  " " +
+                                  y
+                                }
+                              >
+                                {lang_short["English"]} &#9658;{" "}
+                                {lang_short[language.language]}
+                              </span>
+                            ) : (
+                              ""
+                            )}
+                            {language.toEnglish ? (
+                              <span
+                                className="uk-label"
+                                key={
+                                  onboard.first_name +
+                                  onboard.last_name +
+                                  language.language +
+                                  " to English " +
+                                  " language(s) " +
+                                  i +
+                                  " " +
+                                  y
+                                }
+                              >
+                                {lang_short[language.language]} &#9658;{" "}
+                                {lang_short["English"]}
+                              </span>
+                            ) : (
+                              <span></span>
+                            )}
+                          </div>
+                        ))}
+                      </td>
+                      <td>{formatDate(onboard.date_submitted)}</td>
+                      <td>
+                        {onboard.languages.map((lang, z) => (
                           <span
                             className="uk-label"
                             key={
                               onboard.first_name +
                               onboard.last_name +
-                              language.from_langauge +
-                              language.to_langauge +
-                              " language(s) " +
-                              i +
-                              " " +
-                              y
-                            }
-                          >
-                            {lang_short[language.from_langauge]} &#9658;{" "}
-                            {lang_short[language.to_language]}
-                          </span>
-                        ))}
-                      </td>
-                      <td>{formatDate(onboard.date_submitted)}</td>
-                      <td>
-                        {onboard.specialities.map((special, z) => (
-                          <span
-                            key={
-                              onboard.first_name +
-                              onboard.last_name +
-                              special +
+                              lang.language +
                               " " +
                               i +
                               " " +
                               z
                             }
                           >
-                            {special},
+                            {lang.experience.join(", ")}
                           </span>
                         ))}
                       </td>
@@ -143,21 +178,54 @@ export default class Onboarding extends React.Component {
                               <b>Language Support</b>
                             </p>
                             {onboard.languages.map((language, b) => (
-                              <p
+                              <div
                                 key={
                                   onboard.first_name +
                                   onboard.last_name +
-                                  language.from_langauge +
-                                  language.to_language +
+                                  language.language +
                                   " language_support " +
                                   i +
                                   " " +
                                   b
                                 }
                               >
-                                {language.from_langauge} to{" "}
-                                {language.to_language}
-                              </p>
+                                {language.fromEnglish ? (
+                                  <p
+                                    key={
+                                      onboard.first_name +
+                                      onboard.last_name +
+                                      " English to " +
+                                      language.language +
+                                      " language_support " +
+                                      i +
+                                      " " +
+                                      b
+                                    }
+                                  >
+                                    English to {language.language}
+                                  </p>
+                                ) : (
+                                  ""
+                                )}
+                                {language.toEnglish ? (
+                                  <p
+                                    key={
+                                      onboard.first_name +
+                                      onboard.last_name +
+                                      language.language +
+                                      " to English " +
+                                      " language_support " +
+                                      i +
+                                      " " +
+                                      b
+                                    }
+                                  >
+                                    {language.language} to English
+                                  </p>
+                                ) : (
+                                  ""
+                                )}
+                              </div>
                             ))}
                           </div>
                           <div className="uk-width-auto">
@@ -166,21 +234,54 @@ export default class Onboarding extends React.Component {
                             </p>
                             {onboard.languages.map((language, b) =>
                               language.oral ? (
-                                <p
+                                <div
                                   key={
                                     onboard.first_name +
                                     onboard.last_name +
-                                    language.from_langauge +
-                                    language.to_language +
+                                    language.language +
                                     " oral translation " +
                                     i +
                                     " " +
                                     b
                                   }
                                 >
-                                  {language.from_langauge} to{" "}
-                                  {language.to_language}
-                                </p>
+                                  {language.toEnglish ? (
+                                    <p
+                                      key={
+                                        onboard.first_name +
+                                        onboard.last_name +
+                                        language.language +
+                                        " to English " +
+                                        " oral translation " +
+                                        i +
+                                        " " +
+                                        b
+                                      }
+                                    >
+                                      {language.language} to English
+                                    </p>
+                                  ) : (
+                                    ""
+                                  )}
+                                  {language.fromEnglish ? (
+                                    <p
+                                      key={
+                                        onboard.first_name +
+                                        onboard.last_name +
+                                        " English to " +
+                                        language.language +
+                                        " oral translation " +
+                                        i +
+                                        " " +
+                                        b
+                                      }
+                                    >
+                                      English to {language.language}
+                                    </p>
+                                  ) : (
+                                    <span></span>
+                                  )}
+                                </div>
                               ) : (
                                 ""
                               )
@@ -208,38 +309,105 @@ export default class Onboarding extends React.Component {
                           </div>
                         </div>
                         {onboard.languages.map((language, b) => (
-                          <React.Fragment
+                          <div
                             key={
                               onboard.first_name +
                               onboard.last_name +
                               " language_test " +
+                              language.language +
                               i +
                               " " +
                               b
                             }
                           >
-                            <p>
-                              <b>
-                                {language.from_langauge} to{" "}
-                                {language.to_language}
-                              </b>
-                            </p>
-                            <div uk-grid="">
-                              <div className="uk-width-1-2">
-                                <p>Original Text</p>
-                                <p>{TranslationTest[language.from_langauge]}</p>
-                              </div>
-                              <div className="uk-width-1-2">
+                            {language.toEnglish ? (
+                              <React.Fragment
+                                key={
+                                  onboard.first_name +
+                                  onboard.last_name +
+                                  " language_test to English from " +
+                                  language.language +
+                                  i +
+                                  " " +
+                                  b
+                                }
+                              >
                                 <p>
-                                  answer:
-                                  {new Date(language.test_time * 1000)
-                                    .toISOString()
-                                    .substr(11, 8)}
+                                  <b>{language.language} to English</b>
                                 </p>
-                                <p>{language.translation_test}</p>
-                              </div>
-                            </div>
-                          </React.Fragment>
+                                <div uk-grid="">
+                                  <div className="uk-width-1-2">
+                                    <p>
+                                      <i>Original Text</i>
+                                    </p>
+                                    <p>{TranslationTest[language.language]}</p>
+                                  </div>
+                                  <div className="uk-width-1-2">
+                                    {language.test_time ? (
+                                      <p>
+                                        answer:
+                                        {new Date(language.test_time * 1000)
+                                          .toISOString()
+                                          .substr(11, 8)}
+                                      </p>
+                                    ) : (
+                                      <span></span>
+                                    )}
+                                    <p>
+                                      <i>Translated Text</i>
+                                    </p>
+                                    <p>{language.toTranslation}</p>
+                                  </div>
+                                </div>
+                              </React.Fragment>
+                            ) : (
+                              ""
+                            )}
+
+                            {language.fromEnglish ? (
+                              <React.Fragment
+                                key={
+                                  onboard.first_name +
+                                  onboard.last_name +
+                                  " from English language_test " +
+                                  language.language +
+                                  i +
+                                  " " +
+                                  b
+                                }
+                              >
+                                <p>
+                                  <b>English to {language.language}</b>
+                                </p>
+                                <div uk-grid="">
+                                  <div className="uk-width-1-2">
+                                    <p>
+                                      <i>Original Text</i>
+                                    </p>
+                                    <p>{TranslationTest["English"]}</p>
+                                  </div>
+                                  <div className="uk-width-1-2">
+                                    {language.test_time ? (
+                                      <p>
+                                        answer:
+                                        {new Date(language.test_time * 1000)
+                                          .toISOString()
+                                          .substr(11, 8)}
+                                      </p>
+                                    ) : (
+                                      <span></span>
+                                    )}
+                                    <p>
+                                      <i>Translated Text</i>
+                                    </p>
+                                    <p>{language.fromTranslation}</p>
+                                  </div>
+                                </div>
+                              </React.Fragment>
+                            ) : (
+                              ""
+                            )}
+                          </div>
                         ))}
                         <div className="uk-clearfix">
                           <div className="uk-float-left"></div>

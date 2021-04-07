@@ -1,4 +1,5 @@
 export default {
-    'Spanish': 'lorem ipsum',
-    'Chinese': 'lorem ipsum'
+    'Spanish': 'lorem ipsum Spanish',
+    'Chinese': 'lorem ipsum Chinese',
+    'English': 'lorem ipsum English',
 }
