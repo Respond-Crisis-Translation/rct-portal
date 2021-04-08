@@ -1,6 +1,6 @@
 import React from "react";
 
-export default ({onChange, languages, lang, setLang}) => {
+export default ({ onChange, languages, lang, setLang }) => {
   return (
     <>
       <label className="uk-form-label">
@@ -53,6 +53,9 @@ export default ({onChange, languages, lang, setLang}) => {
           placeholder="type your answer here"
           rows="5"
           title="addtional_languages"
+          onChange={(e) => {
+            onChange({ additional_languages: e.target.value });
+          }}
         />
       </div>
 

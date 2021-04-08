@@ -84,15 +84,17 @@ export default class Onboarding extends React.Component {
                       </td>
                       <td>
                         {onboard.languages.map((language, y) => (
-                          <div key={
-                            onboard.first_name +
-                            onboard.last_name +
-                            language.language +
-                            " language(s) " +
-                            i +
-                            " " +
-                            y
-                          }>
+                          <div
+                            key={
+                              onboard.first_name +
+                              onboard.last_name +
+                              language.language +
+                              " language(s) " +
+                              i +
+                              " " +
+                              y
+                            }
+                          >
                             {language.fromEnglish ? (
                               <span
                                 className="uk-label"
@@ -308,6 +310,16 @@ export default class Onboarding extends React.Component {
                             ))}
                           </div>
                         </div>
+                        {onboard.additonal_languages ? (
+                          <div>
+                            <b>Additional Languages: </b>
+                            {": "}
+                            <i>{onboard.additonal_languages}</i>
+                          </div>
+                        ) : (
+                          ""
+                        )}
+
                         {onboard.languages.map((language, b) => (
                           <div
                             key={

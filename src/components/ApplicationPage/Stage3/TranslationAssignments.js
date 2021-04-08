@@ -1,17 +1,20 @@
 import React from "react";
 
-export default ({ l }) => {
+import TranslationTest from "../../../assets/lists/translationTest";
+
+export default ({ l, onChange, languages }) => {
   return (
     <React.Fragment>
       <li key={l + "translationpartto"}>
         <label className="uk-form-label">
           Please translate the following {l} message into English
         </label>
-        ...
+        <p>{TranslationTest[l]}</p>
         <div className="uk-width-1-1">
           <label className="uk-form-label" htmlFor="translation">
             Your answer:
           </label>
+          {/* populate from translation */}
           <textarea
             alt="translation"
             className="uk-textarea"
@@ -22,6 +25,11 @@ export default ({ l }) => {
             placeholder="type your answer here"
             rows="5"
             title="translation"
+            onChange={(e) => {
+              let temp = languages;
+              temp[l]["fromTranslation"] = e.target.value;
+              onChange({ languages: temp });
+            }}
           />
         </div>
         <button
@@ -35,11 +43,12 @@ export default ({ l }) => {
         <label className="uk-form-label">
           Please translate the following English message into {l}
         </label>
-        ...
+        <p>{TranslationTest["English"]}</p>
         <div className="uk-width-1-1">
           <label className="uk-form-label" htmlFor="translation">
             Your answer:
           </label>
+          {/* populate to translation */}
           <textarea
             alt="translation"
             className="uk-textarea"
@@ -50,6 +59,11 @@ export default ({ l }) => {
             placeholder="type your answer here"
             rows="5"
             title="translation"
+            onChange={(e) => {
+              let temp = languages;
+              temp[l]["toTranslation"] = e.target.value;
+              onChange({ languages: temp });
+            }}
           />
         </div>
         <button
