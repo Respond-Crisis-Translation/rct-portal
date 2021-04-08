@@ -37,7 +37,7 @@ export default ({
         />
       );
     case 3:
-      return <Stage3 advance={advance} languages={languages} />;
+      return <Stage3 onChange={onChange} advance={advance} languages={languages} />;
     case 4:
       return <Stage4 />;
     default:

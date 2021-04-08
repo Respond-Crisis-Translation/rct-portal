@@ -19,6 +19,7 @@ export default class Application extends React.Component {
         about: "",
       },
       languages: {},
+      additional_languages: {}
     };
 
     this.advance = this.advance.bind(this);

@@ -2,7 +2,9 @@ import React from "react";
 import Navigation from "./Navigation";
 import TranslationAssignments from "./TranslationAssignments";
 
-export default ({ advance, languages }) => {
+import TranslationTest from "../../../assets/lists/translationTest";
+
+export default ({ onChange, advance, languages }) => {
   return (
     <div>
       <Navigation languages={languages} />
@@ -11,17 +13,21 @@ export default ({ advance, languages }) => {
           languages[l]["checked"] &&
           languages[l]["toEnglish"] &&
           languages[l]["fromEnglish"] ? (
-            <TranslationAssignments l={l} />
+            <TranslationAssignments
+            l={l} 
+            onChange={onChange}
+            languages={languages} />
           ) : languages[l]["checked"] && languages[l]["fromEnglish"] ? (
             <li key={l + "translationpartfrom"}>
               <label className="uk-form-label">
                 Please translate the following English message into {l}
               </label>
-              ...
+              <p>{TranslationTest[l]}</p>
               <div className="uk-width-1-1">
                 <label className="uk-form-label" htmlFor="translation">
                   Your answer:
                 </label>
+                {/* populate to translation */}
                 <textarea
                   alt="translation"
                   className="uk-textarea"
@@ -32,6 +38,11 @@ export default ({ advance, languages }) => {
                   placeholder="type your answer here"
                   rows="5"
                   title="translation"
+                  onChange={(e) => {
+                    let temp = languages;
+                    temp[l]["toTranslation"] = e.target.value;
+                    onChange({ languages: temp });
+                  }}
                 />
               </div>
               <button
@@ -46,11 +57,12 @@ export default ({ advance, languages }) => {
               <label className="uk-form-label">
                 Please translate the following {l} message into English
               </label>
-              ...
+              <p>{TranslationTest["English"]}</p>
               <div className="uk-width-1-1">
                 <label className="uk-form-label" htmlFor="translation">
                   Your answer:
                 </label>
+                {/* populate from translation */}
                 <textarea
                   alt="translation"
                   className="uk-textarea"
@@ -61,6 +73,11 @@ export default ({ advance, languages }) => {
                   placeholder="type your answer here"
                   rows="5"
                   title="translation"
+                  onChange={(e) => {
+                    let temp = languages;
+                    temp[l]["fromTranslation"] = e.target.value;
+                    onChange({ languages: temp });
+                  }}
                 />
               </div>
               <button
