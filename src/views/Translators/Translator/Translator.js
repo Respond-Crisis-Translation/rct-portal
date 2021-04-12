@@ -13,42 +13,79 @@ export default ({ onChange, updateTranslator, role, onboard, i, show }) => {
           {onboard.first_name} {onboard.last_name} (3)
         </td>
         <td onClick={onChange}>
-          {onboard.languages?.map((language, y) => (
-            <span
-              className="uk-label"
+          {onboard.languages.map((language, y) => (
+            <div
               key={
                 onboard.first_name +
                 onboard.last_name +
-                language.from_langauge +
-                language.to_langauge +
+                language.language +
                 " language(s) " +
                 i +
                 " " +
                 y
               }
             >
-              {lang_short[language.from_langauge]} &#9658;{" "}
-              {lang_short[language.to_language]}
-            </span>
+              {language.fromEnglish ? (
+                <span
+                  className="uk-label"
+                  key={
+                    onboard.first_name +
+                    onboard.last_name +
+                    " from English to " +
+                    language.langauge +
+                    " language(s) " +
+                    i +
+                    " " +
+                    y
+                  }
+                >
+                  {lang_short["English"]} &#9658;{" "}
+                  {lang_short[language.language]}
+                </span>
+              ) : (
+                ""
+              )}
+              {language.toEnglish ? (
+                <span
+                  className="uk-label"
+                  key={
+                    onboard.first_name +
+                    onboard.last_name +
+                    language.language +
+                    " to English " +
+                    " language(s) " +
+                    i +
+                    " " +
+                    y
+                  }
+                >
+                  {lang_short[language.language]} &#9658;{" "}
+                  {lang_short["English"]}
+                </span>
+              ) : (
+                <span></span>
+              )}
+            </div>
           ))}
         </td>
         <td onClick={onChange}>{formatDate(onboard.date_accepted)}</td>
         <td onClick={onChange}>{formatDate(onboard.date_accepted)}</td>
         <td onClick={onChange}>4/5</td>
         <td onClick={onChange}>
-          {onboard.specialities?.map((special, z) => (
+          {onboard.languages.map((lang, z) => (
             <span
+              className="uk-label"
               key={
                 onboard.first_name +
                 onboard.last_name +
-                special +
+                lang.language +
                 " " +
                 i +
                 " " +
                 z
               }
             >
-              {special},
+              {lang.experience.join(", ")}
             </span>
           ))}
         </td>
