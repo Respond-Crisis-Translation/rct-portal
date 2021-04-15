@@ -1,5 +1,6 @@
 import React from "react";
 import Sidebar from "../../components/Sidebar/Sidebar";
+import UploadButton from "../../components/UploadButton/UploadButton";
 import formatDate from "../../assets/helpers/formatDate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
@@ -157,6 +158,7 @@ export default class CasePage extends React.Component {
                                     >
                                       Complete Task
                                     </button>
+                                    <UploadButton caseId/>
                                     <button className="uk-button uk-button-primary">
                                       Upload
                                     </button>

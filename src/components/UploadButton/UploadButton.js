@@ -1,13 +1,18 @@
 import React from 'react';
+import * as CaseService from "../../services/CaseService";
 
 class UploadButton extends React.Component {
 
   render() {
     return (
-        <input type="file" id="uploader">Upload Some docs</input>
-        <button action="uploadCaseDocument()">GO UPLOAD</button>
-    )
+      <>
+      <form onSubmit={CaseService.uploadCaseDocument()}>
+        <input type="file" onChange= />
+        <button action="uploadCaseDocument(file)">GO UPLOAD</button>
+      </form>
+      </>
+    );
   }
 }
 
-export default UploadButton
+export default UploadButton;

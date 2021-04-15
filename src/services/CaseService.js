@@ -12,16 +12,40 @@ export const getMyCases = (translatorId) => {
   return db.collection('cases').where('translator.id', '==', translatorId).get()
 }
 
-export const uploadCaseDocument = (file) => {
+export const uploadCaseDocument = (caseId, file) => {
   const timestamp = db.FieldValue.serverTimestamp();
   var fileId = auth.currentUser.uid + "/" + file.name;
-  var storageRef = fs.ref(fileId).put(file).catch(
-    function(error) {
-      console.error("Error uploading document.");
-    }
-  );
 
-  // document.getElementById("uploader").addEventListener("change", function(e) {
-  //     files = e.target.files;
-  // });
+  // 0. Get Case (Document in Firebase)
+  var query = firebase.firestore().collection('messages')
+                                  .where(caseId, "==", true);
+
+  var caseRef = db.collection('cases').doc(caseId);
+  console.log("Using CASEID: ", caseId);
+  console.log("CASEREF: ", caseRef);
+
+  caseRef.get().then(doc => {
+    if (doc.exists) {
+      console.log("Document contents: ", doc.date());
+    } else {
+      console.log("No document contents.");
+    }
+  }).catch(error => {
+    console.log("error getting doc: ", error);
+  });
+
+
+
+    // 1. Upload file
+    fs.ref(fileId).put(file).then(snapshot => {
+      console.log("uploading file.");
+
+      // 2. Update Case with file location
+
+
+    }).catch(error => {
+        console.error("Error uploading document.");
+      }
+    );
+  );
 }
