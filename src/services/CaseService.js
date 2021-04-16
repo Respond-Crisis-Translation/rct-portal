@@ -16,20 +16,15 @@ export const getCaseDocuments = (caseId) => {
 
 }
 
-export const uploadCaseDocument = (caseId, file) => {
+export const uploadCaseDocument = (file) => {
   const timestamp = db.FieldValue.serverTimestamp();
   var filePath = auth.currentUser.uid + "/" + file.name;
+  var caseId = null;
 
   // 0. Get Case (Document in Firebase)
-  var query = firebase.firestore().collection('messages')
-                                  .where(caseId, "==", true);
-
   console.log("Using CASEID: ", caseId);
-  console.log("CASEREF: ", caseRef);
 
-  getCase(caseId).then(doc => {
-    if (doc.exists) {
-      console.log("Document contents: ", doc.date());
+  getCase(caseId).then(caseRef => {
 
       // 1. Upload file
       var storageRef = fs.ref(filePath).put(file).then(storageSnapshot => {
@@ -47,9 +42,6 @@ export const uploadCaseDocument = (caseId, file) => {
         }
       );
 
-    } else {
-      console.log("No case contents.");
-    }
   }).catch(error => {
     console.log("error getting case: ", error);
   });

@@ -158,10 +158,10 @@ export default class CasePage extends React.Component {
                                     >
                                       Complete Task
                                     </button>
-                                    <UploadButton caseId/>
-                                    <button className="uk-button uk-button-primary">
-                                      Upload
-                                    </button>
+                                    <UploadButton case={ this.props.match.params.case_id } />
+                                    // <button className="uk-button uk-button-primary">
+                                    //   Upload
+                                    // </button>
                                   </>
                                 )}
                               </div>
