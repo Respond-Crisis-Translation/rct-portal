@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 
 import * as CaseService from "../../services/CaseService";
+import * as DocumentService from "../../services/DocumentService";
 import { Link } from "react-router-dom";
 
 export default class CasePage extends React.Component {
@@ -15,20 +16,29 @@ export default class CasePage extends React.Component {
       case: null,
       show: null,
       error: null,
+      documents: [],
     };
   }
 
   componentDidMount() {
     const caseId = this.props.match.params.case_id;
+
     CaseService.getCase(caseId)
       .then((doc) => {
         if (doc.exists) {
           this.setState({ case: doc.data() });
         } else {
-          this.setState({ error: `No document found with id ${caseId}` });
+          this.setState({ error: `No record found with id ${caseId}` });
         }
       })
       .catch(() => this.setState({ errorCode: "create-list-error" }));
+
+    DocumentService.getDocuments(caseId).then((snapshot) => {
+      const docs = [];
+      snapshot.forEach((doc) => docs.push(doc.data()));
+      console.log(docs);
+      this.setState({ documents: docs });
+    });
   }
 
   render() {
@@ -78,7 +88,7 @@ export default class CasePage extends React.Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {this.state.case.documents.map((onboard, i) => (
+                    {this.state.documents.map((onboard, i) => (
                       <React.Fragment
                         key={onboard.first_name + onboard.last_name + " " + i}
                       >
@@ -107,7 +117,7 @@ export default class CasePage extends React.Component {
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              C
+                              Download
                             </a>
                           </td>
                         </tr>
@@ -118,24 +128,37 @@ export default class CasePage extends React.Component {
                           }}
                         >
                           <td colSpan={5}>
-                            <iframe
+                            <img
                               id={`frame-${i}`}
                               title={onboard.name}
+                              alt="Original Document"
                               src={onboard.file_link}
-                              width="640"
-                              height="480"
-                            ></iframe>
+                            ></img>
                             <p>
                               <b>Uploaded Document</b>
                             </p>
                             {onboard.translated_document_link ? (
-                              <p>
-                                {onboard.translated_document_name}.
-                                {onboard.translated_document_file_type}
-                              </p>
+                              <div>
+                                <p>
+                                  <a
+                                    href={onboard.translated_document_link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {onboard.name}
+                                  </a>
+                                </p>
+                                <img
+                                  id={`frame-translated-${i}`}
+                                  title={onboard.name}
+                                  alt="Translated Document"
+                                  src={onboard.translated_document_link}
+                                ></img>
+                              </div>
                             ) : (
                               <p>-</p>
                             )}
+                            <br></br>
                             <div className="uk-clearfix">
                               <div className="uk-float-right">
                                 {onboard.translated_document_link ? (
@@ -158,10 +181,7 @@ export default class CasePage extends React.Component {
                                     >
                                       Complete Task
                                     </button>
-                                    <UploadButton case={ this.props.match.params.case_id } />
-                                    // <button className="uk-button uk-button-primary">
-                                    //   Upload
-                                    // </button>
+                                    <UploadButton document={onboard} />
                                   </>
                                 )}
                               </div>

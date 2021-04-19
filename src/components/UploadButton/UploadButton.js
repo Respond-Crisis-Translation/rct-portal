@@ -1,63 +1,102 @@
-import React from 'react';
-import * as CaseService from "../../services/CaseService";
-import { auth, db, fs } from '../../firebase'
+import React from "react";
+import * as DocumentService from "../../services/DocumentService";
+import { fs } from "../../firebase";
+import firebase from "firebase/app";
 
 class UploadButton extends React.Component {
   constructor(props) {
     super(props);
-    // this.state = {
-    //   case: null,
-    // };
-    this.handleUpload = this.handleUpload.bind(this)
-  }
-
-  onFormSubmit(e) {
-    e.preventDefault();
-    this.fileUpload(this.state.file).then(response => {
-      console.log(response.data);
-    });
+    this.handleUpload = this.handleUpload.bind(this);
   }
 
   handleUpload(e) {
     const file = e.target.files[0];
-    const caseId = this.props.case;
-
+    const document = this.props.document;
+    console.log(document);
     if (file == null) return;
     console.log(file);
 
-    var filePath = auth.currentUser.uid + "/" + file.name;
+    var filePath =
+      document.case_id +
+      "/" +
+      file.lastModified +
+      "_" +
+      file.name.replace(" ", "-");
+    // 1. Upload file
+    var uploadTask = fs.ref(filePath).put(file);
 
-    // 0. Get Case (Document in Firebase)
-    console.log("Using CASEID: ", caseId);
-    CaseService.getCase(caseId).then(caseRef => {
+    // Listen for state changes, errors, and completion of the upload.
+    uploadTask.on(
+      firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
+      (snapshot) => {
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log("Upload is " + progress + "% done");
+        switch (snapshot.state) {
+          case firebase.storage.TaskState.PAUSED: // or 'paused'
+            console.log("Upload is paused");
+            break;
+          case firebase.storage.TaskState.RUNNING: // or 'running'
+            console.log("Upload is running");
+            break;
+          default:
+            console.log("Success");
+        }
+      },
+      (error) => {
+        // A full list of error codes is available at
+        // https://firebase.google.com/docs/storage/web/handle-errors
+        switch (error.code) {
+          case "storage/unauthorized":
+            // User doesn't have permission to access the object
+            console.log("unauthorized");
+            break;
+          case "storage/canceled":
+            // User canceled the upload
+            console.log("canceled");
+            break;
 
-        // 1. Upload file
-        var storageRef = fs.ref(filePath).put(file).then(storageSnapshot => {
-          console.log("uploading file.");
+          case "storage/unknown":
+            // Unknown error occurred, inspect error.serverResponse
+            console.log("unknown");
+            break;
+          default:
+            console.log("success");
+        }
+      },
+      () => {
+        // Upload completed successfully, now we can get the download URL
+        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+          console.log("File available at", downloadURL);
 
-          // 2. Update Case with file location
-          return caseRef.update({
-              documents: {
-                date_completed: db.FieldValue.serverTimestamp(),
-                file_link: storageSnapshot.metadata.fullPath,
-                translated_document_link: storageSnapshot.metadata.fullPath,
-              }
-            });
-
-        }).catch(error => {
-            console.error("Error updating case record after document upload.");
-          }
-        );
-
-    }).catch(error => {
-      console.log("error getting case: ", error);
-    });
+          DocumentService.updateDocument(
+            document.id,
+            downloadURL,
+            file.type
+          ).then(
+            (res) => {
+              console.log("uploaded successfully", res);
+            },
+            (err) => {
+              console.log("Error loading", err);
+            }
+          );
+        });
+      }
+    );
   }
 
   render() {
     return (
       <>
-        <input type="file" onChange={this.handleUpload} />
+        <input
+          className="uk-button uk-button-primary"
+          type="file"
+          onChange={this.handleUpload}
+        />
+        {/* <button className="uk-button uk-button-primary">
+                                    Upload
+                                    </button> */}
       </>
     );
   }
