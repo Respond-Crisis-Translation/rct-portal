@@ -92,10 +92,16 @@ export default class Cases extends React.Component {
                       <td>{formatDate(onboard.due_date)}</td>
                       <td>{onboard.status}</td>
                       <td>{onboard.project_manager}</td>
-                      <td>
-                        {onboard.translator.first_name}{" "}
-                        {onboard.translator.last_name}
-                      </td>
+                      {onboard.translator ? (
+                        <td>
+                          {onboard.translator.first_name}{" "}
+                          {onboard.translator.last_name}
+                        </td>
+                      ) : (
+                        <td>
+                          <button className="uk-button  uk-button-primary uk-button-small uk-margin-small-right" type="button">Assign</button>
+                        </td>
+                      )}
                     </tr>
                     <tr
                       style={{
