@@ -106,7 +106,7 @@ export default ({ first_name, last_name, translator_id, task_in_progress, langua
                           onClick={() => {
                             let tempCases = cases;
                             Object.values(tempCases).forEach((value) => {
-                              if (value.id == task.id) {
+                              if (value.id === task.id) {
                                 value.checked = !task.checked;
                                 value.translator.first_name = first_name;
                                 value.translator.last_name = last_name;

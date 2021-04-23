@@ -1,7 +1,6 @@
 import React from "react";
 import formatDate from "../../../assets/helpers/formatDate";
 import lang_short from "../../../assets/lists/langShort";
-import cases from "../../../assets/lists/Cases";
 import AssignTask from "../../../components/AssignTask/AssignTask";
 import ExtendedTranslator from "./ExtendedTranslator";
 
