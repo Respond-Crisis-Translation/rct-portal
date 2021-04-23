@@ -4,7 +4,7 @@ import lang_short from "../../assets/lists/langShort";
 import formatDate from "../../assets/helpers/formatDate";
 import * as CaseService from "../../services/CaseService";
 
-export default ({ first_name, last_name, task_in_progress, languages }) => {
+export default ({ first_name, last_name, translator_id, task_in_progress, languages }) => {
   const [loading, setLoading] = useState(true);
   const [cases, setCases] = useState(null);
 
@@ -108,6 +108,9 @@ export default ({ first_name, last_name, task_in_progress, languages }) => {
                             Object.values(tempCases).forEach((value) => {
                               if (value.id == task.id) {
                                 value.checked = !task.checked;
+                                value.translator.first_name = first_name;
+                                value.translator.last_name = last_name;
+                                value.translator.id = translator_id;
                               }
                             });
                             setCases(tempCases);
@@ -128,6 +131,7 @@ export default ({ first_name, last_name, task_in_progress, languages }) => {
                 Object.values(cases).forEach((element) => {
                   if (element.checked) {
                     CaseService.updateStatus(element.id, "Assigned");
+                    CaseService.updateTranslator(element.id, first_name, last_name, 0);
                   }
                 getPendingCases();
                 });

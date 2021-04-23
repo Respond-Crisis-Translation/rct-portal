@@ -57,6 +57,7 @@ export default ({ onChange, updateTranslator, role, onboard, i, show }) => {
           <AssignTask
             first_name={onboard.first_name}
             last_name={onboard.last_name}
+            translator_id={onboard.id}
             task_in_progress={5}
             languages={onboard.languages}
           />

@@ -19,3 +19,8 @@ export const getMyCases = (translatorId) => {
 export const updateStatus = (caseId, status) => {
   return db.collection('cases').doc(caseId).update({status})
 }
+
+export const updateTranslator = (caseId, firstName, lastName, translatorId) => {
+  const translator = {first_name: firstName, last_name:lastName, id: translatorId}
+  return db.collection('cases').doc(caseId).update({translator})
+}
