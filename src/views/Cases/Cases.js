@@ -4,6 +4,7 @@ import lang_short from "../../assets/lists/langShort";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import * as CaseService from "../../services/CaseService";
+import AddCaseModalForm from "../../components/AddCaseModalForm/AddCaseModalForm";
 import "./Cases.css";
 
 export default class Cases extends React.Component {
@@ -12,7 +13,24 @@ export default class Cases extends React.Component {
     this.state = {
       show: null,
       cases: [],
+      isOpen: false,
     };
+    this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  openModal() {
+    this.setState({isOpen: true});
+  }
+
+  closeModal() {
+    this.setState({isOpen: false});
+  }
+
+  handleSubmit(firstname, lastname, duedate, organization, pocName, pocInfo, pageCount, docDescription, sensitiveContents, documents) {
+    // TODO: call backend API here, can access state like addCaseState.firstname
+    this.setState({isOpen: false});
   }
 
   componentDidMount() {
@@ -44,6 +62,17 @@ export default class Cases extends React.Component {
               marginRight: "0px",
             }}
           >
+          <button onClick={this.openModal}>Add case</button>
+
+          { this.state.isOpen ? 
+            <AddCaseModalForm 
+              closeModal={this.closeModal} 
+              isOpen={this.state.isOpen} 
+              handleSubmit={this.handleSubmit}
+            /> 
+            : 
+            null 
+          }
             <table className="uk-table uk-table-divider">
               <thead>
                 <tr>

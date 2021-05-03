@@ -92,6 +92,9 @@ class App extends Component {
                 path="/login"
                 render={(props) => <Login {...props} />}
               />
+              <Route exact path="/testcasecreation">
+                  <Cases />
+                </Route>
               <Route
                 exact
                 path="/forgotpassword"
