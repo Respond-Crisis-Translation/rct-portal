@@ -1,7 +1,6 @@
 import React from "react";
 import formatDate from "../../../assets/helpers/formatDate";
 import lang_short from "../../../assets/lists/langShort";
-import cases from "../../../assets/lists/Cases";
 import AssignTask from "../../../components/AssignTask/AssignTask";
 import ExtendedTranslator from "./ExtendedTranslator";
 
@@ -12,7 +11,7 @@ export default ({ onChange, updateTranslator, role, onboard, i, show }) => {
         <td onClick={onChange}>
           {onboard.first_name} {onboard.last_name} (3)
         </td>
-        <td onClick={onChange}>
+        <td>
           {onboard.languages.map((language, y) => (
             <div
               key={
@@ -71,7 +70,7 @@ export default ({ onChange, updateTranslator, role, onboard, i, show }) => {
         <td onClick={onChange}>{formatDate(onboard.date_accepted)}</td>
         <td onClick={onChange}>{formatDate(onboard.date_accepted)}</td>
         <td onClick={onChange}>4/5</td>
-        <td onClick={onChange}>
+        <td>
           {onboard.languages.map((lang, z) => (
             <span
               className="uk-label"
@@ -94,9 +93,9 @@ export default ({ onChange, updateTranslator, role, onboard, i, show }) => {
           <AssignTask
             first_name={onboard.first_name}
             last_name={onboard.last_name}
+            translator_id={onboard.id}
             task_in_progress={5}
             languages={onboard.languages}
-            tasks={cases}
           />
         </td>
       </tr>

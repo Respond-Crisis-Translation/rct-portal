@@ -16,7 +16,7 @@ export default class Cases extends React.Component {
   }
 
   componentDidMount() {
-    CaseService.getCases()
+    CaseService.getAllCases()
       .then((snapshot) => {
         const data = snapshot.docs.map((doc) => doc.data());
         this.setState({ cases: data });
@@ -92,16 +92,10 @@ export default class Cases extends React.Component {
                       <td>{formatDate(onboard.due_date)}</td>
                       <td>{onboard.status}</td>
                       <td>{onboard.project_manager}</td>
-                      {onboard.translator ? (
-                        <td>
-                          {onboard.translator.first_name}{" "}
-                          {onboard.translator.last_name}
-                        </td>
-                      ) : (
-                        <td>
-                          <button className="uk-button  uk-button-primary uk-button-small uk-margin-small-right" type="button">Assign</button>
-                        </td>
-                      )}
+                      <td>
+                        {onboard.translator.first_name}{" "}
+                        {onboard.translator.last_name}
+                      </td>
                     </tr>
                     <tr
                       style={{
