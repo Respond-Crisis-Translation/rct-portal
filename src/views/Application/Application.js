@@ -19,6 +19,7 @@ export default class Application extends React.Component {
         about: "",
       },
       languages: {},
+      additional_languages: {}
     };
 
     this.advance = this.advance.bind(this);
@@ -60,6 +61,8 @@ export default class Application extends React.Component {
       about: values.answers.about,
       found_us: values.answers.find_us,
       support: values.answers.support,
+      date_submitted: firebase.firestore.Timestamp.now(),
+      status: "PENDING",
     };
 
     newValues.languages = [];
@@ -79,7 +82,6 @@ export default class Application extends React.Component {
       }
     }
 
-    newValues.date_submitted = firebase.firestore.Timestamp.now();
     return newValues;
   }
 

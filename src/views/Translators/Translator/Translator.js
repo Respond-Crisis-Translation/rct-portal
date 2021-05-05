@@ -1,7 +1,6 @@
 import React from "react";
 import formatDate from "../../../assets/helpers/formatDate";
 import lang_short from "../../../assets/lists/langShort";
-import cases from "../../../assets/lists/Cases";
 import AssignTask from "../../../components/AssignTask/AssignTask";
 import ExtendedTranslator from "./ExtendedTranslator";
 
@@ -12,43 +11,80 @@ export default ({ onChange, updateTranslator, role, onboard, i, show }) => {
         <td onClick={onChange}>
           {onboard.first_name} {onboard.last_name} (3)
         </td>
-        <td onClick={onChange}>
-          {onboard.languages?.map((language, y) => (
-            <span
-              className="uk-label"
+        <td>
+          {onboard.languages.map((language, y) => (
+            <div
               key={
                 onboard.first_name +
                 onboard.last_name +
-                language.from_langauge +
-                language.to_langauge +
+                language.language +
                 " language(s) " +
                 i +
                 " " +
                 y
               }
             >
-              {lang_short[language.from_langauge]} &#9658;{" "}
-              {lang_short[language.to_language]}
-            </span>
+              {language.fromEnglish ? (
+                <span
+                  className="uk-label"
+                  key={
+                    onboard.first_name +
+                    onboard.last_name +
+                    " from English to " +
+                    language.langauge +
+                    " language(s) " +
+                    i +
+                    " " +
+                    y
+                  }
+                >
+                  {lang_short["English"]} &#9658;{" "}
+                  {lang_short[language.language]}
+                </span>
+              ) : (
+                ""
+              )}
+              {language.toEnglish ? (
+                <span
+                  className="uk-label"
+                  key={
+                    onboard.first_name +
+                    onboard.last_name +
+                    language.language +
+                    " to English " +
+                    " language(s) " +
+                    i +
+                    " " +
+                    y
+                  }
+                >
+                  {lang_short[language.language]} &#9658;{" "}
+                  {lang_short["English"]}
+                </span>
+              ) : (
+                <span></span>
+              )}
+            </div>
           ))}
         </td>
         <td onClick={onChange}>{formatDate(onboard.date_accepted)}</td>
         <td onClick={onChange}>{formatDate(onboard.date_accepted)}</td>
         <td onClick={onChange}>4/5</td>
-        <td onClick={onChange}>
-          {onboard.specialities?.map((special, z) => (
+        <td>
+          {onboard.languages.map((lang, z) => (
             <span
+              className="uk-label"
               key={
                 onboard.first_name +
                 onboard.last_name +
-                special +
+                lang.language +
                 " " +
                 i +
                 " " +
                 z
               }
             >
-              {special},
+              {lang.experience.join(", ")}
             </span>
           ))}
         </td>
@@ -57,9 +93,9 @@ export default ({ onChange, updateTranslator, role, onboard, i, show }) => {
           <AssignTask
             first_name={onboard.first_name}
             last_name={onboard.last_name}
+            translator_id={onboard.id}
             task_in_progress={5}
             languages={onboard.languages}
-            tasks={cases}
           />
         </td>
       </tr>

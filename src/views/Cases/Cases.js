@@ -34,7 +34,7 @@ export default class Cases extends React.Component {
   }
 
   componentDidMount() {
-    CaseService.getCases()
+    CaseService.getAllCases()
       .then((snapshot) => {
         const data = snapshot.docs.map((doc) => doc.data());
         this.setState({ cases: data });

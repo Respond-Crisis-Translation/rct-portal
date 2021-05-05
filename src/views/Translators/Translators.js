@@ -88,6 +88,7 @@ export default class Translators extends React.Component {
                     role={this.state.role}
                     show={this.state.show === i}
                     onboard={onboard}
+                    key={i + "_translator"}
                     i={i}
                   />
                 ))}

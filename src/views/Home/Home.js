@@ -28,6 +28,20 @@ export default class Home extends React.Component {
     });
   }
 
+  getNoCasesMessage() {
+    const { cases } = this.state;
+    return !cases || cases.length === 0 ? (
+      <div>
+        <p className="ErrorMessage">
+          Welcom to Respond Crisis Translators Network!
+        </p>
+        <p>No Cases has been assigned to you at this time</p>
+      </div>
+    ) : (
+      <div></div>
+    );
+  }
+
   render() {
     const { cases } = this.state;
     return (
@@ -47,6 +61,7 @@ export default class Home extends React.Component {
               uk-grid=""
               style={{ marginRight: "0px" }}
             >
+              {this.getNoCasesMessage()}
               {cases.map((c, index) => (
                 <div className="child" key={index}>
                   <Link
