@@ -4,27 +4,33 @@ import lang_short from "../../assets/lists/langShort";
 import formatDate from "../../assets/helpers/formatDate";
 import * as CaseService from "../../services/CaseService";
 
-export default ({ first_name, last_name, translator_id, task_in_progress, languages }) => {
+export default ({
+  first_name,
+  last_name,
+  translator_id,
+  task_in_progress,
+  languages,
+}) => {
   const [loading, setLoading] = useState(true);
   const [cases, setCases] = useState(null);
 
   const getPendingCases = () => {
     CaseService.getCases("Pending")
-    .then((snapshot) => {
-      let temp = snapshot.docs.map((doc) => doc.data());
-      Object.values(temp).forEach((element) => {
-        element.checked = false;
+      .then((snapshot) => {
+        let temp = snapshot.docs.map((doc) => doc.data());
+        Object.values(temp).forEach((element) => {
+          element.checked = false;
+        });
+        setCases(temp);
+      })
+      .finally(() => {
+        setLoading(false);
       });
-      setCases(temp);
-    })
-    .finally(() => {
-      setLoading(false);
-    });
-  }
+  };
 
   useEffect(() => {
     getPendingCases();
-}, []);
+  }, []);
 
   return (
     <>
@@ -59,13 +65,52 @@ export default ({ first_name, last_name, translator_id, task_in_progress, langua
                   <b>Language(s)</b>
                 </p>
                 {languages.map((language, y) => (
-                  <span
-                    className="uk-label"
-                    key={`${first_name}${last_name}${language.from_langauge}${language.to_langauge} language(s) ${y}`}
+                  <div
+                    key={
+                      first_name +
+                      last_name +
+                      language.language +
+                      " language(s) " +
+                      y
+                    }
                   >
-                    {lang_short[language.from_langauge]} &#9658;{" "}
-                    {lang_short[language.to_language]}
-                  </span>
+                    {language.fromEnglish ? (
+                      <span
+                        className="uk-label"
+                        key={
+                          first_name +
+                          last_name +
+                          " from English to " +
+                          language.langauge +
+                          " language(s) " +
+                          y
+                        }
+                      >
+                        {lang_short["English"]} &#9658;{" "}
+                        {lang_short[language.language]}
+                      </span>
+                    ) : (
+                      ""
+                    )}
+                    {language.toEnglish ? (
+                      <span
+                        className="uk-label"
+                        key={
+                          first_name +
+                          last_name +
+                          language.language +
+                          " to English " +
+                          " language(s) " +
+                          y
+                        }
+                      >
+                        {lang_short[language.language]} &#9658;{" "}
+                        {lang_short["English"]}
+                      </span>
+                    ) : (
+                      <span></span>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
@@ -84,7 +129,9 @@ export default ({ first_name, last_name, translator_id, task_in_progress, langua
               </thead>
               <tbody>
                 {loading ? (
-                  <div>loading</div>
+                  <tr key="loading...">
+                    <td>loading</td>
+                  </tr>
                 ) : (
                   cases.map((task) => (
                     <tr key={`${task.id} task`}>
@@ -130,10 +177,13 @@ export default ({ first_name, last_name, translator_id, task_in_progress, langua
               onClick={() => {
                 Object.values(cases).forEach((element) => {
                   if (element.checked) {
-                    CaseService.updateStatus(element.id, "Assigned");
-                    CaseService.updateTranslator(element.id, first_name, last_name, 0);
+                    CaseService.assignCase(element.id, "Assigned", {
+                      first_name,
+                      last_name,
+                      id: translator_id,
+                    });
                   }
-                getPendingCases();
+                  getPendingCases();
                 });
               }}
             >
