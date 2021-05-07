@@ -23,7 +23,11 @@ export default class Onboarding extends React.Component {
 
   loadApplications() {
     TranslatorService.getTranslators("PENDING").then((snapshot) => {
-      const data = snapshot.docs.map((doc) => doc.data());
+      const data = snapshot.docs.map((doc) => {
+        const id = doc.id;
+        const translator = doc.data();
+        return {...translator, id};
+      });
       this.setState({ translators: data });
     });
   }
