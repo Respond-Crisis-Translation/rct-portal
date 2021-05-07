@@ -2,15 +2,17 @@ import { createBrowserHistory } from "history";
 import React, { Component, lazy, Suspense } from "react";
 import { Route, Router, Switch } from "react-router-dom";
 import "uikit/dist/css/uikit.min.css";
-import "uikit/dist/js/uikit-icons.min";
-import "uikit/dist/js/uikit.min";
+// import "uikit/dist/js/uikit-icons.min";
+// import "uikit/dist/js/uikit.min";
 import { ProvideAuth } from "../../components/Auth/Auth";
 import PrivateRoute from "../../components/PrivateRoute/PrivateRoute";
 import { auth } from "../../firebase";
 import UnauthorizedPage from "../UnauthorizedPage/UnauthorizedPage";
 import "./App.css";
 
-// import UIkit from 'uikit';
+import UIkit from 'uikit';
+import Icons from 'uikit/dist/js/uikit-icons';
+UIkit.use(Icons);
 
 const Home = lazy(() => import("../Home/Home"));
 const Application = lazy(() => import("../Application/Application"));

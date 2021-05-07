@@ -12,6 +12,11 @@ export default class Cases extends React.Component {
     this.state = {
       show: null,
       cases: [],
+      languages: ["ES to EN", "ZH to EN", "EN to ES"],
+      selectedLanguage: "",
+      organizations: ["Organization 1", "Organization 2", "Organization 3"],
+      selectedOrganization: "",
+      searchText: ""
     };
   }
 
@@ -22,6 +27,23 @@ export default class Cases extends React.Component {
         this.setState({ cases: data });
       })
       .catch(() => this.setState({ errorCode: "create-list-error" }));
+  }
+
+  handleOrganisationChange = (e) => {
+    this.setState({selectedOrganization: e.target.value});
+  }
+
+  handleLanguageChange = (e) => {
+    this.setState({selectedLanguage: e.target.value});
+  }
+
+  handleSearch = (e) => {
+    e.preventDefault()
+    // TODO: Search Functionality
+  }
+
+  handleSearchChange = (e) => {
+    this.setState({searchText: e.target.value})
   }
 
   render() {
@@ -35,7 +57,43 @@ export default class Cases extends React.Component {
           first_name={this.props.first_name}
           last_name={this.props.last_name}
         />
+        
         <div className="tm-main uk-section uk-section-default">
+          
+          {/* Cases filter menu */}
+          <div className="uk-container uk-position-relative FilterMainDiv">
+
+            <div className="uk-inline OrganisationFilter">
+              <select className="uk-select" value={this.state.selectedOrganization} onChange={this.handleOrganisationChange}>
+                <option defaultValue="" >All Organizations</option>
+                {this.state.organizations.map((organization, key) => 
+                  <option value={organization} key={key}>{organization}</option>
+                )}
+              </select>
+            </div>
+
+            <div className="uk-inline SearchFilter">
+              <a className="uk-form-icon uk-form-icon-flip" href="/" uk-icon="icon: search" onClick={this.handleSearch} aria-hidden="true"> </a>
+              <input className="uk-input" type="text" placeholder="e.g. case number, name, notes etc" value={this.state.searchText} onChange={this.handleSearchChange}/>
+            </div>
+
+
+            <div className="uk-inline LanguageFilter">
+              <select className="uk-select" value={this.state.selectedLanguage} onChange={this.handleLanguageChange}>
+                <option defaultValue="" >All Languages</option>
+                {this.state.languages.map((language, key) => 
+                  <option value={language} key={key}>{language}</option>
+                )}
+              </select>
+            </div>
+            
+            <div className="uk-inline AddCaseFilter">
+              <button className="uk-button uk-button-default uk-button-large">Add Cases</button>
+            </div>            
+          </div>
+
+
+          {/* Cases Table */}
           <div
             className="uk-container uk-position-relative uk-margin-remove"
             style={{
