@@ -127,12 +127,7 @@ class UploadComponent extends React.Component {
       <>
         <td colSpan={5}>
           {/* Preview Document */}
-          <img
-            id={`frame-${this.props.index}`}
-            title={this.props.document.name}
-            alt="Original Document"
-            src={this.props.document.file_link}
-          ></img>
+          <iframe id={`frame-${this.props.index}`} title={this.props.document.name} alt="Original Document" src={this.props.document.file_link} style={{border: "0"}}/>
 
           {/* List of Uploaded Document */}
           <p>
