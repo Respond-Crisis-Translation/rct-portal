@@ -4,6 +4,7 @@ import lang_short from "../../assets/lists/langShort";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import * as CaseService from "../../services/CaseService";
+import * as DocumentService from "../../services/DocumentService";
 import "./Cases.css";
 
 export default class Cases extends React.Component {
@@ -17,6 +18,7 @@ export default class Cases extends React.Component {
       organizations: ["Organization 1", "Organization 2", "Organization 3"],
       selectedOrganization: "",
       searchText: "",
+      documents: [],
     };
   }
 
@@ -149,6 +151,16 @@ export default class Cases extends React.Component {
                         this.setState({
                           show: this.state.show === i ? null : i,
                         });
+                        DocumentService.getDocuments(onboard.id).then(
+                          (snapshot) => {
+                            const docs = [];
+                            snapshot.forEach((doc) => docs.push(doc.data()));
+                            this.setState({ documents: docs });
+                          },
+                          (err) => {
+                            console.log(err);
+                          }
+                        );
                       }}
                       style={
                         this.state.show === i
@@ -174,10 +186,21 @@ export default class Cases extends React.Component {
                       <td>{formatDate(onboard.due_date)}</td>
                       <td>{onboard.status}</td>
                       <td>{onboard.project_manager}</td>
-                      <td>
-                        {onboard.translator.first_name}{" "}
-                        {onboard.translator.last_name}
-                      </td>
+                      {onboard.translator ? (
+                        <td>
+                          {onboard.translator.first_name}{" "}
+                          {onboard.translator.last_name}
+                        </td>
+                      ) : (
+                        <td>
+                          <button
+                            className="uk-button  uk-button-primary uk-button-small uk-margin-small-right"
+                            type="button"
+                          >
+                            Assign
+                          </button>
+                        </td>
+                      )}
                     </tr>
                     <tr
                       style={{
@@ -216,7 +239,7 @@ export default class Cases extends React.Component {
                             </tr>
                           </thead>
                           <tbody>
-                            {onboard.documents.map((document, p) => (
+                            {this.state.documents.map((document, p) => (
                               <tr
                                 key={`${document.name} ${p} ${document.file_type}`}
                               >
@@ -228,7 +251,7 @@ export default class Cases extends React.Component {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
-                                    C
+                                    Download
                                   </a>
                                 </td>
                                 <td>
@@ -237,7 +260,7 @@ export default class Cases extends React.Component {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
-                                    C
+                                    Download
                                   </a>
                                 </td>
                                 <td>
@@ -246,7 +269,7 @@ export default class Cases extends React.Component {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
-                                    C
+                                    Download
                                   </a>
                                 </td>
                               </tr>
