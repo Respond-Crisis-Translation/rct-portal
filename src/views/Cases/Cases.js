@@ -5,6 +5,7 @@ import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import * as CaseService from "../../services/CaseService";
 import * as DocumentService from "../../services/DocumentService";
+import Organizations from "../../assets/lists/knownOrganizations";
 import "./Cases.css";
 
 export default class Cases extends React.Component {
@@ -13,9 +14,9 @@ export default class Cases extends React.Component {
     this.state = {
       show: null,
       cases: [],
-      languages: ["ES to EN", "ZH to EN", "EN to ES"],
+      languages: ["Spanish to English", "English to Spanish"],
       selectedLanguage: "",
-      organizations: ["Organization 1", "Organization 2", "Organization 3"],
+      organizations: Organizations,
       selectedOrganization: "",
       searchText: "",
       documents: [],
@@ -23,25 +24,69 @@ export default class Cases extends React.Component {
   }
 
   componentDidMount() {
+    this.getAllCases();
+  }
+
+  getAllCases = () => {
     CaseService.getAllCases()
       .then((snapshot) => {
         const data = snapshot.docs.map((doc) => doc.data());
         this.setState({ cases: data });
       })
       .catch(() => this.setState({ errorCode: "create-list-error" }));
-  }
+  };
+
+  getCases = (field, value) => {
+    console.log(field, value);
+    CaseService.getCases(field, value)
+      .then((snapshot) => {
+        const data = snapshot.docs.map((doc) => doc.data());
+        this.setState({ cases: data });
+        console.log(data);
+      })
+      .catch(() => this.setState({ errorCode: "create-list-error" }));
+  };
 
   handleOrganisationChange = (e) => {
-    this.setState({ selectedOrganization: e.target.value });
+    e.preventDefault();
+    const org = e.target.value;
+    this.setState({ selectedOrganization: org });
+    if (org === "All Organizations") {
+      this.getAllCases();
+    } else {
+      this.getCases("source", org);
+    }
   };
 
   handleLanguageChange = (e) => {
-    this.setState({ selectedLanguage: e.target.value });
+    e.preventDefault();
+    const lang = e.target.value;
+    this.setState({ selectedLanguage: lang});
+
+    if (lang === 'All Languages') {
+      this.getAllCases();
+      return;
+    }
+    const toFrom = lang.split(" to ");
+    CaseService.getCasesByLang(toFrom[0], toFrom[1])
+      .then((snapshot) => {
+        const data = snapshot.docs.map((doc) => doc.data());
+        this.setState({ cases: data });
+        console.log(data);
+      })
+      .catch(() => this.setState({ errorCode: "create-list-error" }));
   };
 
   handleSearch = (e) => {
     e.preventDefault();
-    // TODO: Search Functionality
+    const { searchText } = this.state;
+    console.log(searchText);
+    if (searchText) {
+      const caseNumber = parseInt(searchText);
+      this.getCases("case_number", caseNumber);
+    } else {
+      this.getAllCases();
+    }
   };
 
   handleSearchChange = (e) => {
@@ -79,7 +124,7 @@ export default class Cases extends React.Component {
             </div>
 
             <div className="uk-inline SearchFilter">
-              <a
+              <button
                 className="uk-form-icon uk-form-icon-flip"
                 href="/"
                 uk-icon="icon: search"
@@ -87,11 +132,11 @@ export default class Cases extends React.Component {
                 aria-hidden="true"
               >
                 {" "}
-              </a>
+              </button>
               <input
                 className="uk-input"
                 type="text"
-                placeholder="e.g. case number, name, notes etc"
+                placeholder="case number"
                 value={this.state.searchText}
                 onChange={this.handleSearchChange}
               />
