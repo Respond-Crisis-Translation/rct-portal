@@ -117,7 +117,7 @@ export default class CasePage extends React.Component {
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              Download
+                              <span uk-icon="icon: download"></span>
                             </a>
                           </td>
                         </tr>

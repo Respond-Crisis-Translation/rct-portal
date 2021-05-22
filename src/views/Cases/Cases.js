@@ -37,7 +37,6 @@ export default class Cases extends React.Component {
   };
 
   getCases = (field, value) => {
-    console.log(field, value);
     CaseService.getCases(field, value)
       .then((snapshot) => {
         const data = snapshot.docs.map((doc) => doc.data());
@@ -296,7 +295,7 @@ export default class Cases extends React.Component {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
-                                    Download
+                                    <span uk-icon="icon: download"></span>
                                   </a>
                                 </td>
                                 <td>
@@ -305,7 +304,7 @@ export default class Cases extends React.Component {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
-                                    Download
+                                    <span uk-icon="icon: download"></span>
                                   </a>
                                 </td>
                                 <td>
@@ -314,7 +313,7 @@ export default class Cases extends React.Component {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
-                                    Download
+                                    <span uk-icon="icon: download"></span>
                                   </a>
                                 </td>
                               </tr>
