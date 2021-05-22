@@ -1,50 +1,65 @@
 import React from "react";
-import Dropzone from 'react-dropzone'
+import Dropzone from "react-dropzone";
 import * as DocumentService from "../../services/DocumentService";
 import { fs } from "../../firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
-import { Line } from 'rc-progress';
+import { Line } from "rc-progress";
 
 import firebase from "firebase/app";
 import "./UploadComponent.css";
 
-
 class UploadComponent extends React.Component {
-  
   constructor(props) {
     super(props);
     this.handleUpload = this.handleUpload.bind(this);
     this.onDrop = this.onDrop.bind(this);
-    this.state = { 
+    this.undoComplete = this.undoComplete.bind(this);
+    this.state = {
       files: [],
       progress: 0,
-      disableUpload: false
-    }
+      disableUpload: false,
+      document: this.props.document,
+    };
   }
 
   onDrop = (files) => {
-    this.setState({files})
+    this.setState({ files });
   };
 
   clearFiles = () => {
-    this.setState({ files: [], disableUpload: false })
-  }
+    this.setState({ files: [], disableUpload: false });
+  };
+
+  undoComplete = () => {
+    const { document } = this.state;
+    DocumentService.undoComplete(document.id).then(
+      (res) => {
+        console.log(res);
+        const updatedDoc = { ...this.state.document };
+        updatedDoc.translated_document_link = "";
+        updatedDoc.translated_document_type = "";
+        this.setState({
+          document: updatedDoc,
+        });
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
 
   handleUpload(e) {
     e.preventDefault();
     const file = this.state.files[0];
-    const document = this.props.document;
+    const caseId = this.props.caseId;
+    const { document } = this.state;
     console.log(document);
     if (file == null) return;
     console.log(file);
 
     var filePath =
-      document.case_id +
-      "/" +
-      file.lastModified +
-      "_" +
-      file.name.replace(" ", "-");
+      caseId + "/" + file.lastModified + "_" + file.name.replaceAll(" ", "-");
     // 1. Upload file
     var uploadTask = fs.ref(filePath).put(file);
 
@@ -89,7 +104,7 @@ class UploadComponent extends React.Component {
         }
       },
       () => {
-        this.setState({disableUpload: true})
+        this.setState({ disableUpload: true });
         // Upload completed successfully, now we can get the download URL
         uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
           console.log("File available at", downloadURL);
@@ -101,6 +116,11 @@ class UploadComponent extends React.Component {
           ).then(
             (res) => {
               console.log("uploaded successfully", res);
+              const updatedDoc = { ...this.state.document };
+              updatedDoc.translated_document_link = downloadURL;
+              this.setState({
+                document: updatedDoc,
+              });
             },
             (err) => {
               console.log("Error loading", err);
@@ -112,9 +132,8 @@ class UploadComponent extends React.Component {
   }
 
   render() {
-
     // Displays list of selected document (before uploading)
-    const files = this.state.files.map(file => (
+    const files = this.state.files.map((file) => (
       <li key={file.name}>
         {file.name} - {file.size} bytes
         <span className="selected_document_list" onClick={this.clearFiles}>
@@ -123,106 +142,127 @@ class UploadComponent extends React.Component {
       </li>
     ));
 
+    const { document } = this.state;
+
     return (
       <>
         <td colSpan={5}>
           {/* Preview Document */}
-          <iframe id={`frame-${this.props.index}`} title={this.props.document.name} alt="Original Document" src={this.props.document.file_link} style={{border: "0"}}/>
+          <iframe
+            id={`frame-${this.props.index}`}
+            title={document.name}
+            alt="Original Document"
+            src={document.file_link}
+            style={{ border: "0" }}
+          />
 
           {/* List of Uploaded Document */}
           <p>
             <b>Uploaded Document</b>
           </p>
-          {this.props.document.translated_document_link ? (
+          {document.translated_document_link ? (
             <div>
               <p>
                 <a
-                  href={this.props.document.translated_document_link}
+                  href={document.translated_document_link}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {this.props.document.name}
+                  {document.name}
                 </a>
               </p>
-              <img
-                id={`frame-translated-${this.props.index}`}
-                title={this.props.document.name}
+              <iframe
+                id={`frame-${this.props.index}`}
+                title={document.name}
                 alt="Translated Document"
-                src={this.props.document.translated_document_link}
-              ></img>
+                src={document.translated_document_link}
+                style={{ border: "0" }}
+              />
             </div>
           ) : (
             <p>-</p>
           )}
-          
+
           {/* Upload section */}
           <div className="uk-clearfix">
             <div className="">
-              {this.props.document.translated_document_link ? (
+              {document.translated_document_link ? (
                 <>
-                  <button
-                    className="uk-button uk-button-primary"
-                    style={{ marginRight: "5px" }}
-                  >
-                    View Certification
-                  </button>
-                  <button className="uk-button uk-button-primary">
-                    Undo Complete
-                  </button>
+                  <div className="upload-button-container">
+                    <button
+                      className="uk-button uk-button-primary"
+                      style={{ marginRight: "5px" }}
+                    >
+                      View Certification
+                    </button>
+                    <button
+                      className="uk-button uk-button-primary"
+                      onClick={this.undoComplete}
+                    >
+                      Undo Complete
+                    </button>
+                  </div>
                 </>
               ) : (
                 <>
                   <Dropzone onDrop={this.onDrop}>
-                    {({getRootProps, getInputProps}) => (
+                    {({ getRootProps, getInputProps }) => (
                       <section className="container">
-                        {this.state.files.length ? ( 
+                        {this.state.files.length ? (
                           <div className="dropzone">
                             <p>
                               <b>Selected Document</b>
                             </p>
                             <aside>
-                              <ul style={{listStyleType: "none"}}>{files}</ul>
+                              <ul style={{ listStyleType: "none" }}>{files}</ul>
                             </aside>
-                            <Line percent={this.state.progress} strokeWidth='1' strokeColor='#8d8e8f' strokeLinecap='square' />
+                            <Line
+                              percent={this.state.progress}
+                              strokeWidth="1"
+                              strokeColor="#8d8e8f"
+                              strokeLinecap="square"
+                            />
                           </div>
                         ) : (
-                          <div {...getRootProps({className: 'dropzone'})}>
+                          <div {...getRootProps({ className: "dropzone" })}>
                             <input {...getInputProps()} />
-                            <div className="dropzone-drag-option">Drag files here</div>
-                            <div className="dropzone-select-option">Select files from you device</div>
+                            <div className="dropzone-drag-option">
+                              Drag files here
+                            </div>
+                            <div className="dropzone-select-option">
+                              Select files from you device
+                            </div>
                           </div>
                         )}
                       </section>
                     )}
                   </Dropzone>
-                  
+
                   {/* Upload Button Container */}
                   <div className="upload-button-container">
-                      <button className="uk-button uk-button-primary" style={{marginRight: "5px", marginTop: "5px"}} onClick={this.handleUpload} disabled={this.state.disableUpload}>
-                        Upload
-                      </button>
+                    <button
+                      className="uk-button uk-button-primary"
+                      style={{ marginRight: "5px", marginTop: "5px" }}
+                      onClick={this.handleUpload}
+                      disabled={this.state.disableUpload}
+                    >
+                      Upload
+                    </button>
                   </div>
 
-                  {this.props.document.translated_document_link ? (
-                    <button className="uk-button uk-button-default" style={{ marginRight: "5px" }}>
-                      Complete Task    
+                  {document.translated_document_link ? (
+                    <button
+                      className="uk-button uk-button-default"
+                      style={{ marginRight: "5px" }}
+                    >
+                      Complete Task
                     </button>
-                  ) : (null)}
-                  
+                  ) : null}
                 </>
               )}
             </div>
           </div>
         </td>
-
-         {/* <input
-          className="uk-button uk-button-primary"
-          type="file"
-          onChange={this.handleUpload}
-        /> 
-         <button className="uk-button uk-button-primary">
-                                    Upload
-                                    </button>  */}
       </>
     );
   }

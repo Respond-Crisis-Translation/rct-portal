@@ -88,7 +88,7 @@ export default class CasePage extends React.Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {this.state.case.documents.map((onboard, i) => (  //Replaced documents -> case.documents, TODO: Check the difference between them
+                    {this.state.documents.map((onboard, i) => (
                       <React.Fragment
                         key={onboard.first_name + onboard.last_name + " " + i}
                       >
@@ -128,7 +128,7 @@ export default class CasePage extends React.Component {
                           }}
                         >
                           {/* Return <td> component containing upload section */}
-                          <UploadComponent document={onboard} index={i}/>
+                          <UploadComponent caseId={this.state.case.id} document={onboard} index={i}/>
                         </tr>
                       </React.Fragment>
                     ))}
