@@ -14,7 +14,7 @@ export default ({
   const [cases, setCases] = useState(null);
 
   const getPendingCases = () => {
-    CaseService.getCases("Pending")
+    CaseService.getCases("status", "Pending")
       .then((snapshot) => {
         let temp = snapshot.docs.map((doc) => doc.data());
         Object.values(temp).forEach((element) => {
