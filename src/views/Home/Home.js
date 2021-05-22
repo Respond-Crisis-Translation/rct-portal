@@ -5,6 +5,7 @@ import lang_short from "../../assets/lists/langShort";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import { auth } from "../../firebase";
 import * as CaseService from "../../services/CaseService";
+import * as DocumentService from "../../services/DocumentService";
 import "./Home.css";
 
 export default class Home extends React.Component {
@@ -21,7 +22,22 @@ export default class Home extends React.Component {
         CaseService.getMyCases(user.uid)
           .then((snapshot) => {
             const data = snapshot.docs.map((doc) => doc.data());
-            this.setState({ cases: data });
+            const { cases } = this.state;
+            data.forEach((c) => {
+              DocumentService.getDocuments(c.id).then(
+                (snapshot) => {
+                  const docs = [];
+                  snapshot.forEach((doc) => docs.push(doc.data()));
+                  c.documents = docs;
+                  cases.push(c);
+
+                  this.setState({ cases });
+                },
+                (err) => {
+                  console.log(err);
+                }
+              );
+            });
           })
           .catch(() => this.setState({ errorCode: "create-list-error" }));
       }
