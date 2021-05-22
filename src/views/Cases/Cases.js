@@ -1,9 +1,8 @@
 import React from "react";
-import formatDate from "../../assets/helpers/formatDate";
-import lang_short from "../../assets/lists/langShort";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import * as CaseService from "../../services/CaseService";
+import Case from "./Case/Case";
 import "./Cases.css";
 
 export default class Cases extends React.Component {
@@ -141,126 +140,14 @@ export default class Cases extends React.Component {
               </thead>
               <tbody>
                 {cases.map((onboard, i) => (
-                  <React.Fragment
-                    key={onboard.first_name + onboard.last_name + " " + i}
-                  >
-                    <tr
-                      onClick={() => {
-                        this.setState({
-                          show: this.state.show === i ? null : i,
-                        });
-                      }}
-                      style={
-                        this.state.show === i
-                          ? {
-                              borderLeft: "1px solid #e0e0e0",
-                              borderRight: "1px solid #e0e0e0",
-                              cursor: "pointer",
-                            }
-                          : { cursor: "pointer" }
-                      }
-                    >
-                      <td>
-                        <span className="uk-label">
-                          {lang_short[onboard.fromLanguage]} &#9658;{" "}
-                          {lang_short[onboard.toLanguage]}
-                        </span>
-                      </td>
-                      <td>
-                        {onboard.first_name} {onboard.last_name}
-                      </td>
-                      <td>{onboard.source}</td>
-                      <td>{onboard.case_number}</td>
-                      <td>{formatDate(onboard.due_date)}</td>
-                      <td>{onboard.status}</td>
-                      <td>{onboard.project_manager}</td>
-                      <td>
-                        {onboard.translator.first_name}{" "}
-                        {onboard.translator.last_name}
-                      </td>
-                    </tr>
-                    <tr
-                      style={{
-                        display: this.state.show === i ? "" : "none",
-                        borderTop: "none",
-                        borderLeft: "1px solid #e0e0e0",
-                        borderRight: "1px solid #e0e0e0",
-                        borderBottom: "1px solid #e0e0e0",
-                      }}
-                    >
-                      <td></td>
-                      <td colSpan={7}>
-                        <div uk-grid="">
-                          <div className="uk-width-auto">
-                            <p>
-                              <b>Contact</b>
-                            </p>
-                            <p>{onboard.email}</p>
-                          </div>
-                          <div className="uk-width-auto">
-                            <p>
-                              <b>Contact at organization</b>
-                            </p>
-                            <p>{onboard.contact}</p>
-                          </div>
-                        </div>
-                        <hr />
-                        <table className="uk-table">
-                          <thead>
-                            <tr>
-                              <th>Document Name</th>
-                              <th>File Type</th>
-                              <th>Download</th>
-                              <th>Translation Upload</th>
-                              <th>Certificate Download</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {onboard.documents.map((document, p) => (
-                              <tr
-                                key={`${document.name} ${p} ${document.file_type}`}
-                              >
-                                <td>{document.name}</td>
-                                <td>{document.file_type}</td>
-                                <td>
-                                  <a
-                                    href={document.file_link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    C
-                                  </a>
-                                </td>
-                                <td>
-                                  <a
-                                    href={document.translated_document_link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    C
-                                  </a>
-                                </td>
-                                <td>
-                                  <a
-                                    href={document.certificate_upload}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    C
-                                  </a>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                        <hr />
-                        <p>
-                          <b>Notes</b>
-                        </p>
-                        {onboard.note}
-                      </td>
-                    </tr>
-                  </React.Fragment>
+                  <Case
+                    onChange={() =>
+                      this.setState({ show: this.state.show === i ? null : i })
+                    }
+                    onboard={onboard}
+                    show={this.state.show === i}
+                    i={i}
+                  ></Case>
                 ))}
               </tbody>
             </table>

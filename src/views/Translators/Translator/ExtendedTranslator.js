@@ -12,113 +12,45 @@ export default ({ updateTranslator, role, onboard, i }) => {
         </div>
         <div className="uk-width-auto">
           <p>
-            <b>Language Support</b>
+            <b>Language Supports</b>
           </p>
-          {onboard.languages.map((language, b) => (
-            <div
+          {onboard.languages?.map((language, b) => (
+            <p
               key={
                 onboard.first_name +
                 onboard.last_name +
-                language.language +
+                language.from_langauge +
+                language.to_language +
                 " language_support " +
                 i +
                 " " +
                 b
               }
             >
-              {language.fromEnglish ? (
-                <p
-                  key={
-                    onboard.first_name +
-                    onboard.last_name +
-                    " English to " +
-                    language.language +
-                    " language_support " +
-                    i +
-                    " " +
-                    b
-                  }
-                >
-                  English to {language.language}
-                </p>
-              ) : (
-                ""
-              )}
-              {language.toEnglish ? (
-                <p
-                  key={
-                    onboard.first_name +
-                    onboard.last_name +
-                    language.language +
-                    " to English " +
-                    " language_support " +
-                    i +
-                    " " +
-                    b
-                  }
-                >
-                  {language.language} to English
-                </p>
-              ) : (
-                ""
-              )}
-            </div>
+              {language.from_langauge} to {language.to_language}
+            </p>
           ))}
         </div>
         <div className="uk-width-auto">
           <p>
             <b>Oral Translation</b>
           </p>
-          {onboard.languages.map((language, b) =>
+          {onboard.languages?.map((language, b) =>
             language.oral ? (
-              <div
+              <p
                 key={
                   onboard.first_name +
                   onboard.last_name +
-                  language.language +
+                  language.from_langauge +
+                  language.to_language +
                   " oral translation " +
                   i +
                   " " +
                   b
                 }
               >
-                {language.toEnglish ? (
-                  <p
-                    key={
-                      onboard.first_name +
-                      onboard.last_name +
-                      language.language +
-                      " to English " +
-                      " oral translation " +
-                      i +
-                      " " +
-                      b
-                    }
-                  >
-                    {language.language} to English
-                  </p>
-                ) : (
-                  ""
-                )}
-                {language.fromEnglish ? (
-                  <p
-                    key={
-                      onboard.first_name +
-                      onboard.last_name +
-                      " English to " +
-                      language.language +
-                      " oral translation " +
-                      i +
-                      " " +
-                      b
-                    }
-                  >
-                    English to {language.language}
-                  </p>
-                ) : (
-                  ""
-                )}
-              </div>
+                {language.from_langauge} to {language.to_language}
+              </p>
             ) : (
               ""
             )
