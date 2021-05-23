@@ -136,6 +136,7 @@ export default class Cases extends React.Component {
                   <th>Status</th>
                   <th>PM</th>
                   <th>Translator</th>
+                  <th>Assign Translator</th>
                 </tr>
               </thead>
               <tbody>

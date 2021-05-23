@@ -2,6 +2,7 @@ import React from "react";
 import ExtendedCase from "./ExtendedCase";
 import formatDate from "../../../assets/helpers/formatDate";
 import lang_short from "../../../assets/lists/langShort";
+import AssignTranslator from "../../../components/AssignTranslator/AssignTranslator";
 
 export default ({ onChange, onboard, show, i }) => {
   return (
@@ -35,6 +36,9 @@ export default ({ onChange, onboard, show, i }) => {
         <td>
           {onboard.translator.first_name} {onboard.translator.last_name}
         </td>
+        <td>
+          <AssignTranslator case_id={onboard.id}/>
+        </td>
       </tr>
       <tr
         style={{
@@ -47,7 +51,7 @@ export default ({ onChange, onboard, show, i }) => {
       >
         <td></td>
         <td colSpan={7}>
-          <ExtendedCase onboard={onboard}/>
+          <ExtendedCase onboard={onboard} />
         </td>
       </tr>
     </React.Fragment>
