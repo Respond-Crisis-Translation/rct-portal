@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import * as TranslatorService from "../../services/TranslatorService";
+import * as CaseService from "../../services/CaseService";
+
 
 export default ({
   case_id,
+  loadCases
 }) => {
   const [loading, setLoading] = useState(true);
   const [translators, setTranslators] = useState(null);
+  const [checkedTranslator, setCheckedTranslator] = useState(null);
 
   const getTranslators = () => {
     TranslatorService.getTranslators("APPROVED")
@@ -35,7 +39,7 @@ export default ({
         Assign
       </button>
 
-      <div id={"modal-example-" + case_id} uk-modal="">
+      <div id={"modal-example-" + case_id} uk-modal="" onClick={e=>e.stopPropagation()}>
         <div className="uk-modal-dialog">
           <button
             className="uk-modal-close-default"
@@ -77,16 +81,11 @@ export default ({
                       </td>
                       <td>
                         <input
-                          type="checkbox"
-                          value={task.checked}
+                          type="radio"
+                          value={task.id}
+                          checked={checkedTranslator === task.id}
                           onClick={() => {
-                            let tempTranslators = translators;
-                            Object.values(tempTranslators).forEach((value) => {
-                              if (value.id === task.id) {
-                                value.checked = !task.checked;
-                              }
-                            });
-                            setTranslators(tempTranslators);
+                            setCheckedTranslator(task.id);
                           }}
                         />
                       </td>
@@ -102,8 +101,15 @@ export default ({
               type="button"
               onClick={() => {
                 Object.values(translators).forEach((element) => {
-                  getTranslators();
+                  if (element.id === checkedTranslator) {
+                    CaseService.assignCase(case_id, "Assigned", {
+                      first_name: element.first_name,
+                      last_name: element.last_name,
+                      id: element.id,
+                    });
+                  }
                 });
+                loadCases();
               }}
             >
               Assign

@@ -29,7 +29,7 @@ export default ({onboard}) => {
           </tr>
         </thead>
         <tbody>
-          {onboard.documents.map((document, p) => (
+        {onboard.documents.map((document, p) => (
             <tr key={`${document.name} ${p} ${document.file_type}`}>
               <td>{document.name}</td>
               <td>{document.file_type}</td>

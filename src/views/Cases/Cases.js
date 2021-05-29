@@ -19,13 +19,17 @@ export default class Cases extends React.Component {
     };
   }
 
-  componentDidMount() {
+  loadCases() {
     CaseService.getAllCases()
       .then((snapshot) => {
         const data = snapshot.docs.map((doc) => doc.data());
         this.setState({ cases: data });
       })
       .catch(() => this.setState({ errorCode: "create-list-error" }));
+  }
+
+  componentDidMount() {
+    this.loadCases();
   }
 
   handleOrganisationChange = (e) => {
@@ -145,6 +149,7 @@ export default class Cases extends React.Component {
                     onChange={() =>
                       this.setState({ show: this.state.show === i ? null : i })
                     }
+                    loadCases={() => this.loadCases()}
                     onboard={onboard}
                     show={this.state.show === i}
                     i={i}

@@ -4,7 +4,7 @@ import formatDate from "../../../assets/helpers/formatDate";
 import lang_short from "../../../assets/lists/langShort";
 import AssignTranslator from "../../../components/AssignTranslator/AssignTranslator";
 
-export default ({ onChange, onboard, show, i }) => {
+export default ({ onChange, loadCases, onboard, show, i }) => {
   return (
     <React.Fragment key={onboard.first_name + onboard.last_name + " " + i}>
       <tr
@@ -37,7 +37,7 @@ export default ({ onChange, onboard, show, i }) => {
           {onboard.translator.first_name} {onboard.translator.last_name}
         </td>
         <td>
-          <AssignTranslator case_id={onboard.id}/>
+          <AssignTranslator case_id={onboard.id} loadCases={loadCases}/>
         </td>
       </tr>
       <tr
