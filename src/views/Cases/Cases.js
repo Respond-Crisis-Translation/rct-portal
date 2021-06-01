@@ -8,12 +8,14 @@ import AddCaseModalForm from "../../components/AddCaseModalForm/AddCaseModalForm
 import * as DocumentService from "../../services/DocumentService";
 import Organizations from "../../assets/lists/knownOrganizations";
 import "./Cases.css";
+import { auth } from "../../firebase";
 
 export default class Cases extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       show: null,
+      currentUser: null,
       cases: [],
       isOpen: false,
       languages: ["Spanish to English", "English to Spanish"],
@@ -29,20 +31,58 @@ export default class Cases extends React.Component {
   }
 
   openModal() {
-    this.setState({isOpen: true});
+    this.setState({ isOpen: true });
   }
 
   closeModal() {
-    this.setState({isOpen: false});
+    this.setState({ isOpen: false });
   }
 
-  handleSubmit(firstname, lastname, duedate, organization, pocName, pocInfo, pageCount, docDescription, sensitiveContents, documents) {
-    // TODO: call backend API here, can access state like addCaseState.firstname
-    this.setState({isOpen: false});
+  handleSubmit(
+    firstname,
+    lastname,
+    duedate,
+    organization,
+    pocName,
+    pocInfo,
+    pageCount,
+    docDescription,
+    sensitiveContents,
+    documents
+  ) {
+    console.log(documents);
+    const { currentUser } = this.state;
+    console.log(currentUser);
+    const newCase = {
+      case_number: new Date().getTime(),
+      contact: pocName,
+      email: pocInfo,
+      due_date: new Date(duedate),
+      first_name: firstname,
+      last_name: lastname,
+      source: organization,
+      note: docDescription,
+      page_count: pageCount,
+      status: "New",
+      project_manager: currentUser.displayName,
+    };
+    console.log(newCase);
+    this.setState({ isOpen: false });
+    CaseService.createCase(newCase)
+      .then((res) => {
+        console.log(res);
+        this.getAllCases();
+      })
+      .catch(() => this.setState({ errorCode: "create-list-error" }));
   }
 
   componentDidMount() {
     this.getAllCases();
+    auth.onAuthStateChanged((user) => {
+      if (user && user.uid) {
+        this.setState({ currentUser: user });
+      }
+    });
   }
 
   getAllCases = () => {
@@ -78,9 +118,9 @@ export default class Cases extends React.Component {
   handleLanguageChange = (e) => {
     e.preventDefault();
     const lang = e.target.value;
-    this.setState({ selectedLanguage: lang});
+    this.setState({ selectedLanguage: lang });
 
-    if (lang === 'All Languages') {
+    if (lang === "All Languages") {
       this.getAllCases();
       return;
     }
@@ -175,7 +215,10 @@ export default class Cases extends React.Component {
             </div>
 
             <div className="uk-inline AddCaseFilter">
-              <button onClick={this.openModal} className="uk-button uk-button-default uk-button-large">
+              <button
+                onClick={this.openModal}
+                className="uk-button uk-button-default uk-button-large"
+              >
                 Add Cases
               </button>
             </div>
@@ -190,16 +233,13 @@ export default class Cases extends React.Component {
               marginRight: "0px",
             }}
           >
-
-          { this.state.isOpen ? 
-            <AddCaseModalForm 
-              closeModal={this.closeModal} 
-              isOpen={this.state.isOpen} 
-              handleSubmit={this.handleSubmit}
-            /> 
-            : 
-            null 
-          }
+            {this.state.isOpen ? (
+              <AddCaseModalForm
+                closeModal={this.closeModal}
+                isOpen={this.state.isOpen}
+                handleSubmit={this.handleSubmit}
+              />
+            ) : null}
             <table className="uk-table uk-table-divider">
               <thead>
                 <tr>
