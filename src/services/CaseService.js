@@ -20,6 +20,16 @@ export const getCase = (caseId) => {
   return db.collection("cases").doc(caseId).get();
 };
 
+export const createCase = (document) => {
+  return db
+    .collection("cases")
+    .add(document)
+    .then((documentRef) => {
+      const uid = documentRef.id;
+      db.collection("cases").doc(uid).update({ id: uid });
+    });
+};
+
 export const getMyCases = (translatorId) => {
   return db
     .collection("cases")
