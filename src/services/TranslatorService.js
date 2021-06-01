@@ -5,7 +5,7 @@ export const getTranslators = (status) => {
 }
 
 export const updateStatus = (uid, status) => {
-  return db.collection('translators').doc(uid).update({status})
+  return db.collection('translators').doc(uid).update({id: uid, status})
 }
 
 export const updateRole = (uid, role) => {

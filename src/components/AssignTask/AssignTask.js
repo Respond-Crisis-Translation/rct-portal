@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
-
-import lang_short from "../../assets/lists/langShort";
+import React, { useEffect, useState } from "react";
 import formatDate from "../../assets/helpers/formatDate";
+import lang_short from "../../assets/lists/langShort";
 import * as CaseService from "../../services/CaseService";
 
 export default ({
@@ -15,7 +14,7 @@ export default ({
   const [cases, setCases] = useState(null);
 
   const getPendingCases = () => {
-    CaseService.getCases("Pending")
+    CaseService.getCases("status", "Pending")
       .then((snapshot) => {
         let temp = snapshot.docs.map((doc) => doc.data());
         Object.values(temp).forEach((element) => {
@@ -37,12 +36,12 @@ export default ({
       <button
         className="uk-button  uk-button-primary uk-button-small uk-margin-small-right"
         type="button"
-        uk-toggle="target: #modal-example"
+        uk-toggle={"target: #modal-example-" + translator_id}
       >
         Assign
       </button>
 
-      <div id="modal-example" uk-modal="">
+      <div id={"modal-example-" + translator_id} uk-modal="">
         <div className="uk-modal-dialog">
           <button
             className="uk-modal-close-default"

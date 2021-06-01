@@ -5,6 +5,8 @@ import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import * as CaseService from "../../services/CaseService";
 import AddCaseModalForm from "../../components/AddCaseModalForm/AddCaseModalForm";
+import * as DocumentService from "../../services/DocumentService";
+import Organizations from "../../assets/lists/knownOrganizations";
 import "./Cases.css";
 
 export default class Cases extends React.Component {
@@ -14,6 +16,12 @@ export default class Cases extends React.Component {
       show: null,
       cases: [],
       isOpen: false,
+      languages: ["Spanish to English", "English to Spanish"],
+      selectedLanguage: "",
+      organizations: Organizations,
+      selectedOrganization: "",
+      searchText: "",
+      documents: [],
     };
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
@@ -34,13 +42,73 @@ export default class Cases extends React.Component {
   }
 
   componentDidMount() {
+    this.getAllCases();
+  }
+
+  getAllCases = () => {
     CaseService.getAllCases()
       .then((snapshot) => {
         const data = snapshot.docs.map((doc) => doc.data());
         this.setState({ cases: data });
       })
       .catch(() => this.setState({ errorCode: "create-list-error" }));
-  }
+  };
+
+  getCases = (field, value) => {
+    CaseService.getCases(field, value)
+      .then((snapshot) => {
+        const data = snapshot.docs.map((doc) => doc.data());
+        this.setState({ cases: data });
+        console.log(data);
+      })
+      .catch(() => this.setState({ errorCode: "create-list-error" }));
+  };
+
+  handleOrganisationChange = (e) => {
+    e.preventDefault();
+    const org = e.target.value;
+    this.setState({ selectedOrganization: org });
+    if (org === "All Organizations") {
+      this.getAllCases();
+    } else {
+      this.getCases("source", org);
+    }
+  };
+
+  handleLanguageChange = (e) => {
+    e.preventDefault();
+    const lang = e.target.value;
+    this.setState({ selectedLanguage: lang});
+
+    if (lang === 'All Languages') {
+      this.getAllCases();
+      return;
+    }
+    const toFrom = lang.split(" to ");
+    CaseService.getCasesByLang(toFrom[0], toFrom[1])
+      .then((snapshot) => {
+        const data = snapshot.docs.map((doc) => doc.data());
+        this.setState({ cases: data });
+        console.log(data);
+      })
+      .catch(() => this.setState({ errorCode: "create-list-error" }));
+  };
+
+  handleSearch = (e) => {
+    e.preventDefault();
+    const { searchText } = this.state;
+    console.log(searchText);
+    if (searchText) {
+      const caseNumber = parseInt(searchText);
+      this.getCases("case_number", caseNumber);
+    } else {
+      this.getAllCases();
+    }
+  };
+
+  handleSearchChange = (e) => {
+    this.setState({ searchText: e.target.value });
+  };
 
   render() {
     const { cases } = this.state;
@@ -53,7 +121,67 @@ export default class Cases extends React.Component {
           first_name={this.props.first_name}
           last_name={this.props.last_name}
         />
+
         <div className="tm-main uk-section uk-section-default">
+          {/* Cases filter menu */}
+          <div className="uk-container uk-position-relative FilterMainDiv">
+            <div className="uk-inline OrganisationFilter">
+              <select
+                className="uk-select"
+                value={this.state.selectedOrganization}
+                onChange={this.handleOrganisationChange}
+              >
+                <option defaultValue="">All Organizations</option>
+                {this.state.organizations.map((organization, key) => (
+                  <option value={organization} key={key}>
+                    {organization}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="uk-inline SearchFilter">
+              <button
+                className="uk-form-icon uk-form-icon-flip"
+                href="/"
+                uk-icon="icon: search"
+                onClick={this.handleSearch}
+                aria-hidden="true"
+              >
+                {" "}
+              </button>
+              <input
+                className="uk-input"
+                type="text"
+                placeholder="case number"
+                value={this.state.searchText}
+                onChange={this.handleSearchChange}
+              />
+            </div>
+
+            <div className="uk-inline LanguageFilter">
+              <select
+                className="uk-select"
+                value={this.state.selectedLanguage}
+                onChange={this.handleLanguageChange}
+              >
+                <option defaultValue="">All Languages</option>
+                {this.state.languages.map((language, key) => (
+                  <option value={language} key={key}>
+                    {language}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="uk-inline AddCaseFilter">
+              <button onClick={this.openModal} className="uk-button uk-button-default uk-button-large">
+                Add Cases
+              </button>
+            </div>
+          </div>
+
+          {/* Cases Table */}
           <div
             className="uk-container uk-position-relative uk-margin-remove"
             style={{
@@ -62,7 +190,6 @@ export default class Cases extends React.Component {
               marginRight: "0px",
             }}
           >
-          <button onClick={this.openModal}>Add case</button>
 
           { this.state.isOpen ? 
             <AddCaseModalForm 
@@ -96,6 +223,16 @@ export default class Cases extends React.Component {
                         this.setState({
                           show: this.state.show === i ? null : i,
                         });
+                        DocumentService.getDocuments(onboard.id).then(
+                          (snapshot) => {
+                            const docs = [];
+                            snapshot.forEach((doc) => docs.push(doc.data()));
+                            this.setState({ documents: docs });
+                          },
+                          (err) => {
+                            console.log(err);
+                          }
+                        );
                       }}
                       style={
                         this.state.show === i
@@ -121,10 +258,21 @@ export default class Cases extends React.Component {
                       <td>{formatDate(onboard.due_date)}</td>
                       <td>{onboard.status}</td>
                       <td>{onboard.project_manager}</td>
-                      <td>
-                        {onboard.translator.first_name}{" "}
-                        {onboard.translator.last_name}
-                      </td>
+                      {onboard.translator ? (
+                        <td>
+                          {onboard.translator.first_name}{" "}
+                          {onboard.translator.last_name}
+                        </td>
+                      ) : (
+                        <td>
+                          <button
+                            className="uk-button  uk-button-primary uk-button-small uk-margin-small-right"
+                            type="button"
+                          >
+                            Assign
+                          </button>
+                        </td>
+                      )}
                     </tr>
                     <tr
                       style={{
@@ -163,7 +311,7 @@ export default class Cases extends React.Component {
                             </tr>
                           </thead>
                           <tbody>
-                            {onboard.documents.map((document, p) => (
+                            {this.state.documents.map((document, p) => (
                               <tr
                                 key={`${document.name} ${p} ${document.file_type}`}
                               >
@@ -175,7 +323,7 @@ export default class Cases extends React.Component {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
-                                    C
+                                    <span uk-icon="icon: download"></span>
                                   </a>
                                 </td>
                                 <td>
@@ -184,7 +332,7 @@ export default class Cases extends React.Component {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
-                                    C
+                                    <span uk-icon="icon: download"></span>
                                   </a>
                                 </td>
                                 <td>
@@ -193,7 +341,7 @@ export default class Cases extends React.Component {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
-                                    C
+                                    <span uk-icon="icon: download"></span>
                                   </a>
                                 </td>
                               </tr>

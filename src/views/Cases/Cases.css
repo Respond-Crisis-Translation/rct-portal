@@ -1,0 +1,28 @@
+.FilterMainDiv {
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 0 0 10px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.OrganisationFilter {
+    width: 15%;
+}
+
+.LanguageFilter {
+    width: 15%;
+}
+
+.SearchFilter {
+    width: 45%;
+}
+
+.AddCaseFilter {
+    display: flex;
+}
+
+.AddCaseFilter > button {
+    border-color: #1e87f0;
+    color: #1e87f0;
+}
