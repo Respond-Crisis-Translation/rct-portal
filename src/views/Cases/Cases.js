@@ -41,38 +41,12 @@ export default class Cases extends React.Component {
     this.setState({ isOpen: false });
   }
 
-  handleSubmit(
-    firstname,
-    lastname,
-    duedate,
-    organization,
-    pocName,
-    pocInfo,
-    pageCount,
-    docDescription,
-    sensitiveContents,
-    documents
-  ) {
+  handleSubmit(newCase, documents) {
     console.log(documents);
     if (!documents || documents.length === 0) {
       console.log("Select documents to upload");
       return;
     }
-
-    const { currentUser } = this.state;
-    const newCase = {
-      case_number: new Date().getTime(),
-      contact: pocName,
-      email: pocInfo,
-      due_date: new Date(duedate),
-      first_name: firstname,
-      last_name: lastname,
-      source: organization,
-      note: docDescription,
-      page_count: pageCount,
-      status: "New",
-      project_manager: currentUser.displayName,
-    };
     console.log(newCase);
     this.setState({ isOpen: false });
     CaseService.createCase(newCase)
@@ -154,12 +128,10 @@ export default class Cases extends React.Component {
               file_link: downloadURL,
               file_type: file.type,
               name: file.name,
-            }
+            };
             console.log(document);
             // create document
-            DocumentService.createDocument(
-              document
-            ).then(
+            DocumentService.createDocument(document).then(
               (res) => {
                 console.log("uploaded successfully", res);
                 this.getAllCases();
