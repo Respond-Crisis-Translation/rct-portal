@@ -70,22 +70,24 @@ export default class Home extends React.Component {
               paddingLeft: "10px",
               paddingRight: "10px",
               marginRight: "0px",
+              maxWidth: "none"
             }}
           >
             <div
-              className="uk-child-width-1-2@s uk-child-width-1-3@m parent"
-              uk-grid=""
+              className="uk-grid-small uk-flex-center"
+              uk-grid=''
+              uk-height-match="target: > div > a > .uk-card-body"
               style={{ marginRight: "0px" }}
             >
               {this.getNoCasesMessage()}
               {cases.map((c, index) => (
-                <div className="child" key={index}>
+                <div className="uk-width-large" key={index}>
                   <Link
                     key={index}
                     to={`/case/${c["id"]}`}
                     style={{ textDecoration: "none" }}
                   >
-                    <div className="uk-card uk-card-default uk-card-hover uk-card-body">
+                    <div className="uk-card-default uk-card-hover uk-card-body">
                       <div className="uk-clearfix">
                         <div className="uk-float-left">
                           <div className="uk-label">
