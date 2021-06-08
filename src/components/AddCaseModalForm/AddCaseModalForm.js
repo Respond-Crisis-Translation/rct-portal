@@ -3,7 +3,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import Dropzone from 'react-dropzone';
+
 import Organizations from "../../assets/lists/knownOrganizations";
+import "./AddCaseModalForm.css";
 
 class AddCaseModalForm extends React.Component {
   state = {
@@ -16,6 +19,7 @@ class AddCaseModalForm extends React.Component {
     pageCount: 0,
     docDescription: "",
     sensitiveContents: false,
+    documents: []
   };
 
   handleFirstname = (e) => this.setState({ firstname: e.target.value });
@@ -31,8 +35,14 @@ class AddCaseModalForm extends React.Component {
     this.setState({ sensitiveContents: true });
   handleSensitiveContentAbsent = () =>
     this.setState({ sensitiveContents: false });
+  onDrop = (files) => this.setState({documents: files});
 
   render() {
+    const files = this.state.documents.map(file => (
+      <li key={file.name}>
+        {file.name} - {file.size} bytes
+      </li>
+    ));
     return (
       <Modal show={this.props.isOpen} onHide={this.props.closeModal}>
         <Modal.Header closeButton>
@@ -132,7 +142,18 @@ class AddCaseModalForm extends React.Component {
             </div>
           </Form.Group>
           <Form.Group>
-            <Form.File id="documents" label="Upload documents" multiple />
+            <Dropzone onDrop={this.onDrop}>
+              {({getRootProps, getInputProps}) => (
+                <section className="container">
+                  <h6>Documents:</h6>
+                  <ul>{files}</ul>
+                  <div {...getRootProps({className: 'dropzone'})}>
+                    <input {...getInputProps()} />
+                    <p>{(this.state.documents.length === 0) ? 'Upload Documents' : 'Reupload Documents'}</p>
+                  </div>
+                </section>
+              )}
+            </Dropzone>
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
@@ -150,7 +171,7 @@ class AddCaseModalForm extends React.Component {
                 this.state.pageCount,
                 this.state.docDescription,
                 this.state.sensitiveContents,
-                this.state.documents
+                this.state.documents,
               )
             }
           >
