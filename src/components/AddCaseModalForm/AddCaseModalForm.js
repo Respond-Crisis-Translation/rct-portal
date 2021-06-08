@@ -6,10 +6,15 @@ import Modal from "react-bootstrap/Modal";
 import Dropzone from 'react-dropzone';
 
 import Organizations from "../../assets/lists/knownOrganizations";
+import Languages from "../../assets/lists/supportLangauges";
 import "./AddCaseModalForm.css";
+
+import { auth } from "../../firebase";
 
 class AddCaseModalForm extends React.Component {
   state = {
+    fromLang: "",
+    toLang: "",
     firstname: "",
     lastname: "",
     duedate: "",
@@ -19,9 +24,13 @@ class AddCaseModalForm extends React.Component {
     pageCount: 0,
     docDescription: "",
     sensitiveContents: false,
-    documents: []
+    documents: [],
+    currentUser: null,
   };
 
+
+  handleFromLang = (e) => this.setState({ fromLang: e.target.value });
+  handleToLang = (e) => this.setState({ toLang: e.target.value });
   handleFirstname = (e) => this.setState({ firstname: e.target.value });
   handleLastname = (e) => this.setState({ lastname: e.target.value });
   handleDuedate = (e) => this.setState({ duedate: e.target.value });
@@ -37,6 +46,14 @@ class AddCaseModalForm extends React.Component {
     this.setState({ sensitiveContents: false });
   onDrop = (files) => this.setState({documents: files});
 
+  componentDidMount() {
+    auth.onAuthStateChanged((user) => {
+      if (user && user.uid) {
+        this.setState({ currentUser: user });
+      }
+    });
+  }
+
   render() {
     const files = this.state.documents.map(file => (
       <li key={file.name}>
@@ -49,6 +66,34 @@ class AddCaseModalForm extends React.Component {
           <Modal.Title>Case info</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+        <Form.Group>
+            <Form.Label>From Language</Form.Label>
+            <Form.Control
+              as="select"
+              onChange={this.handleFromLang}
+              placeholder=""
+            >
+              {Languages.map((lang, key) => (
+                <option value={lang} key={key}>
+                  {lang}
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>To Languages</Form.Label>
+            <Form.Control
+              as="select"
+              onChange={this.handleToLang}
+              placeholder=""
+            >
+              {Languages.map((lang, key) => (
+                <option value={lang} key={key}>
+                  {lang}
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
           <Form.Group>
             <Form.Label>Client's first name</Form.Label>
             <Form.Control
@@ -162,15 +207,22 @@ class AddCaseModalForm extends React.Component {
             type="submit"
             onClick={() =>
               this.props.handleSubmit(
-                this.state.firstname,
-                this.state.lastname,
-                this.state.duedate,
-                this.state.organization,
-                this.state.pocName,
-                this.state.pocInfo,
-                this.state.pageCount,
-                this.state.docDescription,
-                this.state.sensitiveContents,
+                {
+                  fromLanguage: this.state.fromLang,
+                  toLanguage: this.state.toLang,
+                  case_number: new Date().getTime(),
+                  contact: this.state.pocName,
+                  email: this.state.pocInfo,
+                  due_date: new Date(this.state.duedate),
+                  first_name: this.state.firstname,
+                  last_name: this.state.lastname,
+                  source: this.state.organization,
+                  note: this.state.docDescription,
+                  page_count: this.state.pageCount,
+                  status: "New",
+                  project_manager: this.state.currentUser.displayName,
+                  project_manager_uid: this.state.currentUser.uid,
+                },
                 this.state.documents,
               )
             }
