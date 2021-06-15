@@ -1,6 +1,5 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Dropzone from 'react-dropzone';
@@ -31,11 +30,23 @@ class AddCaseModalForm extends React.Component {
   handlePageCount = (e) => this.setState({ pageCount: e.target.value });
   handleDocDescription = (e) =>
     this.setState({ docDescription: e.target.value });
-  handleSensitiveContentPresent = () =>
-    this.setState({ sensitiveContents: true });
+  handleSensitiveContent = (e) =>
+    this.setState({ sensitiveContents: (e.target.value === "yes") ? true : false });
   handleSensitiveContentAbsent = () =>
     this.setState({ sensitiveContents: false });
   onDrop = (files) => this.setState({documents: files});
+  handleClear = () => this.setState({
+    firstname: "",
+    lastname: "",
+    duedate: "",
+    organization: "",
+    pocName: "",
+    pocInfo: "",
+    pageCount: 0,
+    docDescription: "",
+    sensitiveContents: false,
+    documents: []
+  });
 
   render() {
     const files = this.state.documents.map(file => (
@@ -44,119 +55,125 @@ class AddCaseModalForm extends React.Component {
       </li>
     ));
     return (
-      <Modal show={this.props.isOpen} onHide={this.props.closeModal}>
+      <Modal show={this.props.isOpen} onHide={this.props.closeModal} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>Case info</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form.Group>
-            <Form.Label>Client's first name</Form.Label>
-            <Form.Control
-              type="text"
-              onChange={this.handleFirstname}
-              placeholder=""
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Client's last name</Form.Label>
-            <Form.Control
-              type="text"
-              onChange={this.handleLastname}
-              placeholder=""
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Case due date</Form.Label>
-            <Form.Control
-              type="date"
-              onChange={this.handleDuedate}
-              placeholder=""
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Organization</Form.Label>
-            <Form.Control
-              as="select"
-              onChange={this.handleOrganization}
-              placeholder=""
-            >
-              <option defaultValue="">---</option>
-              {Organizations.map((organization, key) => (
-                <option value={organization} key={key}>
-                  {organization}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Point of contact at organization</Form.Label>
-            <Form.Control
-              type="text"
-              onChange={this.handlePocName}
-              placeholder=""
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Point of contact info</Form.Label>
-            <Form.Control
-              type="email"
-              onChange={this.handlePocInfo}
-              placeholder=""
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Page count</Form.Label>
-            <Form.Control
-              type="number"
-              onChange={this.handlePageCount}
-              placeholder=""
-              min="0"
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Document description</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              onChange={this.handleDocDescription}
-              placeholder=""
-            />
-          </Form.Group>
-          <Form.Group>
-            Sensitive contents (including graphic description, images, etc.)
-            <div key={`inline-radio`} className="mb-3">
-              <Form.Check
-                type="radio"
-                label="Yes"
-                name="formRadios"
-                id={`inline-radio-1`}
-                onChange={this.handleSensitiveContentPresent}
-              />
-              <Form.Check
-                type="radio"
-                label="No"
-                name="formRadios"
-                id={`inline-radio-2`}
-                onChange={this.handleSensitiveContentAbsent}
-              />
+
+          <form>
+            <div className="uk-grid" uk-grid>
+              <div className="uk-margin-bottom uk-width-1-3@s">
+                <label className="uk-form-label uk-card" >Client's first name</label>
+                <div className="uk-form-controls uk-card">
+                    <input className="uk-input" type="text" placeholder="John" onChange={this.handleFirstname}/>
+                </div>
+              </div>
+
+              <div className="uk-margin-bottom uk-width-1-3@s">
+                <label className="uk-form-label uk-card">Client's last name</label>
+                <div className="uk-form-controls uk-card">
+                    <input className="uk-input" type="text" placeholder="Doe" onChange={this.handleLastname}/>
+                </div>
+              </div>
             </div>
-          </Form.Group>
-          <Form.Group>
-            <Dropzone onDrop={this.onDrop}>
-              {({getRootProps, getInputProps}) => (
-                <section className="container">
-                  <h6>Documents:</h6>
-                  <ul>{files}</ul>
-                  <div {...getRootProps({className: 'dropzone'})}>
-                    <input {...getInputProps()} />
-                    <p>{(this.state.documents.length === 0) ? 'Upload Documents' : 'Reupload Documents'}</p>
-                  </div>
-                </section>
-              )}
-            </Dropzone>
-          </Form.Group>
+              
+            <div className="uk-grid no_top_margin" uk-grid>
+              <div className="uk-margin-bottom uk-width-1-3@s">
+                <label className="uk-form-label uk-card">Case due date</label>
+                <div className="uk-form-controls uk-card">
+                    <input className="uk-input" type="date" onChange={this.handleDuedate}/>
+                </div>
+              </div>
+            </div>
+            
+            <div className="uk-grid no_top_margin" uk-grid>
+              <div className="uk-margin-bottom uk-width-1-3@s">
+                <label className="uk-form-label uk-card">Organisation</label>
+                <div className="uk-form-controls uk-card">
+                  <select className="uk-select" onChange={this.handleOrganization}>
+                    <option defaultValue="">---</option>
+                    {Organizations.map((organization, key) => (
+                      <option value={organization} key={key}>
+                        {organization}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div className="uk-grid no_top_margin" uk-grid>
+              <div className="uk-margin-bottom uk-width-1-3@s">
+                <label className="uk-form-label uk-card" >Point of contact at organization</label>
+                <div className="uk-form-controls uk-card">
+                    <input className="uk-input" type="text" placeholder="John Doe" onChange={this.handlePocName}/>
+                </div>
+              </div>
+
+              <div className="uk-margin-bottom uk-width-1-3@s">
+                <label className="uk-form-label uk-card">Point of contact info</label>
+                <div className="uk-form-controls uk-card">
+                    <input className="uk-input" type="text" placeholder="johndoe@email.com" onChange={this.handlePocInfo}/>
+                </div>
+              </div>
+            </div>
+
+            <div className="uk-grid no_top_margin" uk-grid>
+              <div className="uk-margin-bottom uk-width-1-3@s">
+                <label className="uk-form-label uk-card">Page Count</label>
+                <div className="uk-form-controls uk-card">
+                    <input className="uk-input" type="number" onChange={this.handlePageCount}/>
+                </div>
+              </div>
+            </div>
+
+            <div className="uk-grid no_top_margin" uk-grid>
+              <div className="uk-margin-bottom uk-width-1-1@s">
+                <label className="uk-form-label uk-card">Document description</label>
+                <div className="uk-form-controls uk-card">
+                  <textarea className="uk-textarea" rows="3" placeholder="Document description" onChange={this.handleDocDescription}></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div className="uk-grid no_top_margin" uk-grid>
+              <div className="uk-margin-bottom uk-width-1-1@s">
+                <label className="uk-form-label uk-card">Sensitive contents (including graphic description, images, etc.)</label>
+                <div className="uk-form-controls uk-card">
+                  <label><input className="uk-radio" type="radio" name="formRadios" checked={this.state.sensitiveContents} value="yes" onChange={this.handleSensitiveContent}/> Yes</label><br />
+                  <label><input className="uk-radio" type="radio" name="formRadios" checked={!this.state.sensitiveContents} value="no" onChange={this.handleSensitiveContent}/> No</label>
+                </div>
+              </div>
+            </div>
+            
+            <div className="uk-grid no_top_margin" uk-grid>
+              <div className="uk-margin-bottom uk-width-1-1@s">
+                <Dropzone onDrop={this.onDrop}>
+                  {({getRootProps, getInputProps}) => (
+                    <section className="container">
+                      <h6>Documents:</h6>
+                      <ul>{files}</ul>
+                      <div {...getRootProps({className: 'dropzone'})}>
+                        <input {...getInputProps()} />
+                        <p>{(this.state.documents.length === 0) ? 'Upload Documents' : 'Reupload Documents'}</p>
+                      </div>
+                    </section>
+                  )}
+                </Dropzone>
+              </div>
+            </div>
+
+          </form>
+
         </Modal.Body>
         <Modal.Footer>
+          <Button
+            variant="outline-danger"
+            onClick={this.handleClear}
+          >
+            Delete this case
+          </Button>
           <Button
             variant="primary"
             type="submit"
