@@ -9,6 +9,9 @@ import * as DocumentService from "../../services/DocumentService";
 import Organizations from "../../assets/lists/knownOrganizations";
 import "./Cases.css";
 import { auth } from "../../firebase";
+import { fs } from "../../firebase";
+
+import firebase from "firebase/app";
 
 export default class Cases extends React.Component {
   constructor(props) {
@@ -38,40 +41,20 @@ export default class Cases extends React.Component {
     this.setState({ isOpen: false });
   }
 
-  handleSubmit(
-    firstname,
-    lastname,
-    duedate,
-    organization,
-    pocName,
-    pocInfo,
-    pageCount,
-    docDescription,
-    sensitiveContents,
-    documents
-  ) {
+  handleSubmit(newCase, documents) {
     console.log(documents);
-    const { currentUser } = this.state;
-    console.log(currentUser);
-    const newCase = {
-      case_number: new Date().getTime(),
-      contact: pocName,
-      email: pocInfo,
-      due_date: new Date(duedate),
-      first_name: firstname,
-      last_name: lastname,
-      source: organization,
-      note: docDescription,
-      page_count: pageCount,
-      status: "New",
-      project_manager: currentUser.displayName,
-    };
+    if (!documents || documents.length === 0) {
+      console.log("Select documents to upload");
+      return;
+    }
     console.log(newCase);
     this.setState({ isOpen: false });
     CaseService.createCase(newCase)
-      .then((res) => {
-        console.log(res);
-        this.getAllCases();
+      .then((documentRef) => {
+        console.log(documentRef);
+        const caseId = documentRef.id;
+        // upload doc for the case
+        this.uploadFiles(documents, caseId);
       })
       .catch(() => this.setState({ errorCode: "create-list-error" }));
   }
@@ -84,6 +67,84 @@ export default class Cases extends React.Component {
       }
     });
   }
+
+  uploadFiles = (files, caseId) => {
+    files.forEach((file) => {
+      if (file == null) return;
+
+      var filePath =
+        caseId + "/" + file.lastModified + "_" + file.name.replaceAll(" ", "-");
+      // 1. Upload file
+      var uploadTask = fs.ref(filePath).put(file);
+
+      // Listen for state changes, errors, and completion of the upload.
+      uploadTask.on(
+        firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
+        (snapshot) => {
+          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+          var progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+          this.setState({ progress });
+          switch (snapshot.state) {
+            case firebase.storage.TaskState.PAUSED: // or 'paused'
+              console.log("Upload is paused");
+              break;
+            case firebase.storage.TaskState.RUNNING: // or 'running'
+              console.log("Upload is running");
+              break;
+            default:
+              console.log("Success");
+          }
+        },
+        (error) => {
+          // A full list of error codes is available at
+          // https://firebase.google.com/docs/storage/web/handle-errors
+          switch (error.code) {
+            case "storage/unauthorized":
+              // User doesn't have permission to access the object
+              console.log("unauthorized");
+              break;
+            case "storage/canceled":
+              // User canceled the upload
+              console.log("canceled");
+              break;
+
+            case "storage/unknown":
+              // Unknown error occurred, inspect error.serverResponse
+              console.log("unknown");
+              break;
+            default:
+              console.log("success");
+          }
+        },
+        () => {
+          // Upload completed successfully, now we can get the download URL
+          uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+            console.log("File available at", downloadURL);
+
+            const document = {
+              case_id: caseId,
+              file_link: downloadURL,
+              file_type: file.type,
+              name: file.name,
+            };
+            console.log(document);
+            // create document
+            DocumentService.createDocument(document).then(
+              (res) => {
+                console.log("uploaded successfully", res);
+                this.getAllCases();
+              },
+              (err) => {
+                console.log("Error loading", err);
+              }
+            );
+          });
+        }
+      );
+    });
+  };
 
   getAllCases = () => {
     CaseService.getAllCases()

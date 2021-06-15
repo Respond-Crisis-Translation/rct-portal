@@ -21,13 +21,13 @@ export const getCase = (caseId) => {
 };
 
 export const createCase = (document) => {
-  return db
-    .collection("cases")
-    .add(document)
-    .then((documentRef) => {
-      const uid = documentRef.id;
-      db.collection("cases").doc(uid).update({ id: uid });
-    });
+  const docRef = db.collection("cases").add(document);
+
+  docRef.then((documentRef) => {
+    const uid = documentRef.id;
+    return db.collection("cases").doc(uid).update({ id: uid });
+  });
+  return docRef;
 };
 
 export const getMyCases = (translatorId) => {
