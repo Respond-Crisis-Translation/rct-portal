@@ -2,7 +2,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import Dropzone from 'react-dropzone';
+import Dropzone from "react-dropzone";
 
 import Organizations from "../../assets/lists/knownOrganizations";
 import Languages from "../../assets/lists/supportLangauges";
@@ -27,7 +27,6 @@ class AddCaseModalForm extends React.Component {
     currentUser: null,
   };
 
-
   handleFromLang = (e) => this.setState({ fromLang: e.target.value });
   handleToLang = (e) => this.setState({ toLang: e.target.value });
   handleFirstname = (e) => this.setState({ firstname: e.target.value });
@@ -40,20 +39,23 @@ class AddCaseModalForm extends React.Component {
   handleDocDescription = (e) =>
     this.setState({ docDescription: e.target.value });
   handleSensitiveContent = (e) =>
-    this.setState({ sensitiveContents: (e.target.value === "yes") ? true : false });
-  onDrop = (files) => this.setState({documents: files});
-  handleClear = () => this.setState({
-    firstname: "",
-    lastname: "",
-    duedate: "",
-    organization: "",
-    pocName: "",
-    pocInfo: "",
-    pageCount: 0,
-    docDescription: "",
-    sensitiveContents: false,
-    documents: []
-  });
+    this.setState({
+      sensitiveContents: e.target.value === "yes" ? true : false,
+    });
+  onDrop = (files) => this.setState({ documents: files });
+  handleClear = () =>
+    this.setState({
+      firstname: "",
+      lastname: "",
+      duedate: "",
+      organization: "",
+      pocName: "",
+      pocInfo: "",
+      pageCount: 0,
+      docDescription: "",
+      sensitiveContents: false,
+      documents: [],
+    });
 
   componentDidMount() {
     auth.onAuthStateChanged((user) => {
@@ -64,7 +66,7 @@ class AddCaseModalForm extends React.Component {
   }
 
   render() {
-    const files = this.state.documents.map(file => (
+    const files = this.state.documents.map((file) => (
       <li key={file.name}>
         {file.name} - {file.size} bytes
       </li>
@@ -75,38 +77,99 @@ class AddCaseModalForm extends React.Component {
           <Modal.Title>Case info</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-
           <form>
             <div className="uk-grid" uk-grid>
               <div className="uk-margin-bottom uk-width-1-3@s">
-                <label className="uk-form-label uk-card" >Client's first name</label>
+                <label className="uk-form-label uk-card">From Language</label>
                 <div className="uk-form-controls uk-card">
-                    <input className="uk-input" type="text" placeholder="John" value={this.state.firstname} onChange={this.handleFirstname}/>
+                  <select
+                    className="uk-select"
+                    onChange={this.handleFromLang}
+                    value={this.state.fromLang}
+                  >
+                    {Languages.map((lang, key) => (
+                      <option value={lang} key={key}>
+                        {lang}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
-              <div className="uk-margin-bottom uk-width-1-3@s">
-                <label className="uk-form-label uk-card">Client's last name</label>
+              <div className="uk-margin-bottom no_top_margin uk-width-1-3@s">
+                <label className="uk-form-label uk-card">
+                  To Language
+                </label>
                 <div className="uk-form-controls uk-card">
-                    <input className="uk-input" type="text" placeholder="Doe" value={this.state.lastname} onChange={this.handleLastname}/>
+                  <select
+                    className="uk-select"
+                    onChange={this.handleToLang}
+                    value={this.state.toLang}
+                  >
+                    {Languages.map((lang, key) => (
+                      <option value={lang} key={key}>
+                        {lang}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>
-              
+            <div className="uk-grid no_top_margin" uk-grid>
+              <div className="uk-margin-bottom no_top_margin uk-width-1-3@s">
+                <label className="uk-form-label uk-card">
+                  Client's first name
+                </label>
+                <div className="uk-form-controls uk-card">
+                  <input
+                    className="uk-input"
+                    type="text"
+                    placeholder="John"
+                    value={this.state.firstname}
+                    onChange={this.handleFirstname}
+                  />
+                </div>
+              </div>
+
+              <div className="uk-margin-bottom no_top_margin uk-width-1-3@s">
+                <label className="uk-form-label uk-card">
+                  Client's last name
+                </label>
+                <div className="uk-form-controls uk-card">
+                  <input
+                    className="uk-input"
+                    type="text"
+                    placeholder="Doe"
+                    value={this.state.lastname}
+                    onChange={this.handleLastname}
+                  />
+                </div>
+              </div>
+            </div>
+
             <div className="uk-grid no_top_margin" uk-grid>
               <div className="uk-margin-bottom uk-width-1-3@s">
                 <label className="uk-form-label uk-card">Case due date</label>
                 <div className="uk-form-controls uk-card">
-                    <input className="uk-input" type="date" value={this.state.duedate} onChange={this.handleDuedate}/>
+                  <input
+                    className="uk-input"
+                    type="date"
+                    value={this.state.duedate}
+                    onChange={this.handleDuedate}
+                  />
                 </div>
               </div>
             </div>
-            
+
             <div className="uk-grid no_top_margin" uk-grid>
               <div className="uk-margin-bottom uk-width-1-3@s">
                 <label className="uk-form-label uk-card">Organisation</label>
                 <div className="uk-form-controls uk-card">
-                  <select className="uk-select" onChange={this.handleOrganization} value={this.state.organization}>
+                  <select
+                    className="uk-select"
+                    onChange={this.handleOrganization}
+                    value={this.state.organization}
+                  >
                     <option defaultValue="">---</option>
                     {Organizations.map((organization, key) => (
                       <option value={organization} key={key}>
@@ -117,19 +180,35 @@ class AddCaseModalForm extends React.Component {
                 </div>
               </div>
             </div>
-            
+
             <div className="uk-grid no_top_margin" uk-grid>
               <div className="uk-margin-bottom uk-width-1-3@s">
-                <label className="uk-form-label uk-card" >Point of contact at organization</label>
+                <label className="uk-form-label uk-card">
+                  Point of contact at organization
+                </label>
                 <div className="uk-form-controls uk-card">
-                    <input className="uk-input" type="text" placeholder="John Doe" value={this.state.pocName} onChange={this.handlePocName}/>
+                  <input
+                    className="uk-input"
+                    type="text"
+                    placeholder="John Doe"
+                    value={this.state.pocName}
+                    onChange={this.handlePocName}
+                  />
                 </div>
               </div>
 
               <div className="uk-margin-bottom uk-width-1-3@s">
-                <label className="uk-form-label uk-card">Point of contact info</label>
+                <label className="uk-form-label uk-card">
+                  Point of contact info
+                </label>
                 <div className="uk-form-controls uk-card">
-                    <input className="uk-input" type="text" placeholder="johndoe@email.com" value={this.state.pocInfo} onChange={this.handlePocInfo}/>
+                  <input
+                    className="uk-input"
+                    type="text"
+                    placeholder="johndoe@email.com"
+                    value={this.state.pocInfo}
+                    onChange={this.handlePocInfo}
+                  />
                 </div>
               </div>
             </div>
@@ -138,55 +217,91 @@ class AddCaseModalForm extends React.Component {
               <div className="uk-margin-bottom uk-width-1-3@s">
                 <label className="uk-form-label uk-card">Page Count</label>
                 <div className="uk-form-controls uk-card">
-                    <input className="uk-input" type="number" value={this.state.pageCount} onChange={this.handlePageCount}/>
+                  <input
+                    className="uk-input"
+                    type="number"
+                    value={this.state.pageCount}
+                    onChange={this.handlePageCount}
+                  />
                 </div>
               </div>
             </div>
 
             <div className="uk-grid no_top_margin" uk-grid>
               <div className="uk-margin-bottom uk-width-1-1@s">
-                <label className="uk-form-label uk-card">Document description</label>
+                <label className="uk-form-label uk-card">
+                  Document description
+                </label>
                 <div className="uk-form-controls uk-card">
-                  <textarea className="uk-textarea" rows="3" placeholder="Document description" value={this.state.docDescription} onChange={this.handleDocDescription}></textarea>
+                  <textarea
+                    className="uk-textarea"
+                    rows="3"
+                    placeholder="Document description"
+                    value={this.state.docDescription}
+                    onChange={this.handleDocDescription}
+                  ></textarea>
                 </div>
               </div>
             </div>
 
             <div className="uk-grid no_top_margin" uk-grid>
               <div className="uk-margin-bottom uk-width-1-1@s">
-                <label className="uk-form-label uk-card">Sensitive contents (including graphic description, images, etc.)</label>
+                <label className="uk-form-label uk-card">
+                  Sensitive contents (including graphic description, images,
+                  etc.)
+                </label>
                 <div className="uk-form-controls uk-card">
-                  <label><input className="uk-radio" type="radio" name="formRadios" checked={this.state.sensitiveContents} value="yes" onChange={this.handleSensitiveContent}/> Yes</label><br />
-                  <label><input className="uk-radio" type="radio" name="formRadios" checked={!this.state.sensitiveContents} value="no" onChange={this.handleSensitiveContent}/> No</label>
+                  <label>
+                    <input
+                      className="uk-radio"
+                      type="radio"
+                      name="formRadios"
+                      checked={this.state.sensitiveContents}
+                      value="yes"
+                      onChange={this.handleSensitiveContent}
+                    />{" "}
+                    Yes
+                  </label>
+                  <br />
+                  <label>
+                    <input
+                      className="uk-radio"
+                      type="radio"
+                      name="formRadios"
+                      checked={!this.state.sensitiveContents}
+                      value="no"
+                      onChange={this.handleSensitiveContent}
+                    />{" "}
+                    No
+                  </label>
                 </div>
               </div>
             </div>
-            
+
             <div className="uk-grid no_top_margin" uk-grid>
               <div className="uk-margin-bottom uk-width-1-1@s">
                 <Dropzone onDrop={this.onDrop}>
-                  {({getRootProps, getInputProps}) => (
+                  {({ getRootProps, getInputProps }) => (
                     <section className="container">
                       <h6>Documents:</h6>
                       <ul>{files}</ul>
-                      <div {...getRootProps({className: 'dropzone'})}>
+                      <div {...getRootProps({ className: "dropzone" })}>
                         <input {...getInputProps()} />
-                        <p>{(this.state.documents.length === 0) ? 'Upload Documents' : 'Reupload Documents'}</p>
+                        <p>
+                          {this.state.documents.length === 0
+                            ? "Upload Documents"
+                            : "Reupload Documents"}
+                        </p>
                       </div>
                     </section>
                   )}
                 </Dropzone>
               </div>
             </div>
-
           </form>
-
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            variant="outline-danger"
-            onClick={this.handleClear}
-          >
+          <Button variant="outline-danger" onClick={this.handleClear}>
             Delete this case
           </Button>
           <Button
@@ -206,11 +321,11 @@ class AddCaseModalForm extends React.Component {
                   source: this.state.organization,
                   note: this.state.docDescription,
                   page_count: this.state.pageCount,
-                  status: "New",
+                  status: "Pending",
                   project_manager: this.state.currentUser.displayName,
                   project_manager_uid: this.state.currentUser.uid,
                 },
-                this.state.documents,
+                this.state.documents
               )
             }
           >

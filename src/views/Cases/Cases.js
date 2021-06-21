@@ -10,7 +10,7 @@ import Organizations from "../../assets/lists/knownOrganizations";
 import "./Cases.css";
 import { auth } from "../../firebase";
 import { fs } from "../../firebase";
-
+import AssignTranslator from "../../components/AssignTranslator/AssignTranslator";
 import firebase from "firebase/app";
 
 export default class Cases extends React.Component {
@@ -150,6 +150,7 @@ export default class Cases extends React.Component {
     CaseService.getAllCases()
       .then((snapshot) => {
         const data = snapshot.docs.map((doc) => doc.data());
+        console.log(data);
         this.setState({ cases: data });
       })
       .catch(() => this.setState({ errorCode: "create-list-error" }));
@@ -366,12 +367,13 @@ export default class Cases extends React.Component {
                         </td>
                       ) : (
                         <td>
-                          <button
+                          <AssignTranslator currentCase={onboard} loadComp={this.componentDidMount}/>
+                          {/* <button
                             className="uk-button  uk-button-primary uk-button-small uk-margin-small-right"
                             type="button"
                           >
                             Assign
-                          </button>
+                          </button> */}
                         </td>
                       )}
                     </tr>
